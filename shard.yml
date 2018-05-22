@@ -1,0 +1,13 @@
+name: vortexdb
+version: 0.1.0
+
+authors:
+  - Grabli66 <grabli66@gmail.com>
+
+targets:
+  vortexdb:
+    main: src/vortexdb.cr
+
+crystal: 0.24.2
+
+license: MIT
