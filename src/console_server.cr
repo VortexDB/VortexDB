@@ -40,24 +40,19 @@ class ConsoleServer
   # Обрабатывает сообщение
   def process(client : CommandClient, message : String) : Void
     cmdList = message.split(" ")
+    puts cmdList
 
-    begin
-      case cmdList[0]
-      when "new"
-        processNew(client,cmdList)
-      when "del"
-        processDelete(client, cmdList)
-      when "get"
-        processGetValue(client, cmdList)
-      when "set"
-        processSetValue(client, cmdList)
-      else
-        raise VortexException.new("Unknown command")
-      end
-    rescue e : VortexException
-      client.sendLine("e.message!")
-    rescue e : Exception
-      client.sendLine("error")
+    case cmdList[0]
+    when "new"
+      processNew(client,cmdList)
+    when "del"
+      processDelete(client, cmdList)
+    when "get"
+      processGetValue(client, cmdList)
+    when "set"
+      processSetValue(client, cmdList)
+    else
+      raise VortexException.new("Unknown command")
     end
   end
   
@@ -97,27 +92,44 @@ class ConsoleServer
   end
 
   # Обрабатывает установление значения
-  def processSetValue(client : CommandClient, cmdList : Array(String)) : Void
-    
+  def processSetValue(client : CommandClient, cmdList : Array(String)) : Void    
   end
 
-  # Обрабатывает создание нового класса
+  # Process create new class
   def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[2]
-    @commandProcessor.createClass(className)
-    client.send("ok\n")
+    parentId = nil
+    if cmdList.size > 3
+      parentId = cmdList[3].to_i64
+    end
+    nclass = @commandProcessor.createClass(className, parentId)
+    client.sendLine("Class created id: #{nclass.id}")
   end
 
-  # Обрабатывает создание новой сущности
+  # Process create new instance
   def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void
     instanceName = cmdList[2]
     #@commandProcessor.createInstance(instanceName)
   end
 
-  # Обрабатывает создание нового атрибута
+  # Process create new attribute
   def processNewAttr(client : CommandClient, cmdList : Array(String)) : Void
-    attrName = cmdList[2]
+    attrName = cmdList[3]
+    case cmdList[2]
+    when "class"
+      processNewClassAttribute(client, cmdList) : Void
+    when "instance"
+            
+    else
+      raise VortexException.new("Bad request")      
+    end
+
     #@commandProcessor.createAttribute(instanceName)
+  end
+
+  # Process create new class attribute
+  def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
+    @commandProcessor.createAttribute()
   end
 
   # Запускает сервер
@@ -139,10 +151,10 @@ class ConsoleServer
             process(commandClient, message)
           rescue e : VortexException
             puts e.backtrace
-            client.send(e.message!)
+            commandClient.sendLine(e.message!)
           rescue e : Exception
             puts e.backtrace
-            client.send("error\n")
+            commandClient.sendLine("error")
           end
         end
       end

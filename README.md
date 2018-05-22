@@ -1,6 +1,6 @@
-# vortexdb
+# VortexDB
 
-TODO: Write a description here
+Nothing works right now. Just an experement.
 
 ## Installation
 

@@ -1,4 +1,11 @@
-# Сущность
+# Type for value
+enum ValueType
+    VInt,
+    VString,
+    VDouble
+end
+
+# Base entity
 class StorageEntity
     # Идентификатор сущности
     getter id : Int64
@@ -11,10 +18,10 @@ class StorageEntity
     end
 end
 
-# Описание класса
+# Class entity
 class StorageClass < StorageEntity
     # Класс владелец
-    getter parentClass : StorageClass
+    getter parentClass : StorageClass?
 
     # Конструктор
     def initialize(id, name, @parentClass)
@@ -22,20 +29,18 @@ class StorageClass < StorageEntity
     end
 end
 
-# Описание сущности
+# Instance entity
 class StorageInstance < StorageEntity
-    # Класс владелец
+    # Parent class
     getter parentClass : StorageClass
-
-    # Конструктор
+    
     def initialize(id, name, @parentClass)
         super(id, name)
     end
 end
 
-# Описание атрибута
+# Entity attribute
 class StorageAttribute < StorageEntity
-    # Конструктор
     def initialize(id, name)
         super(id, name)
     end
