@@ -2,26 +2,22 @@ require "./contracts"
 
 # In-memory storage for entities
 class Storage
-    # Counter for class entities id
-    @classCounter : Int64 = 0_i64
-
     # In-memory storage 
-    @storageClasses : Hash(Int64, StorageClass)
+    @storageClasses : Hash(String, StorageClass)
         
     def initialize
-        @storageClasses = Hash(Int64, StorageClass).new
+        @storageClasses = Hash(String, StorageClass).new
     end
 
-    # Returns class by id
-    def getClassById(id : Int64) : StorageClass?
-        return @storageClasses[id]?
+    # Returns class by name
+    def getClassByName(name : String) : StorageClass?
+        return @storageClasses[name]?
     end
 
     # Creates class for storage and returns it
     def createClass(name : String, parent : StorageClass?) : StorageClass
-        nclass = StorageClass.new(@classCounter , name, parent)
-        @storageClasses[nclass.id] = nclass
-        @classCounter += 1
+        nclass = StorageClass.new(name, parent)
+        @storageClasses[nclass.name] = nclass
         p nclass
         return nclass
     end

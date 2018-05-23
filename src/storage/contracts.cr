@@ -6,42 +6,43 @@ enum ValueType
 end
 
 # Base entity
-class StorageEntity
-    # Идентификатор сущности
-    getter id : Int64
-
-    # Название сущности
-    getter name : String
-
-    # Конструктор
-    def initialize(@id, @name)        
-    end
+class StorageEntity    
 end
 
 # Class entity
 class StorageClass < StorageEntity
-    # Класс владелец
+    # Название сущности
+    getter name : String
+
+    # Parent class
     getter parentClass : StorageClass?
 
-    # Конструктор
-    def initialize(id, name, @parentClass)
-        super(id, name)
+    # Dictionary of class attributes
+    getter classAttributes : Hash(String, StorageAttribute)
+    
+    def initialize(@name, @parentClass)
+        @classAttributes = Hash(String, StorageAttribute).new
     end
 end
 
 # Instance entity
 class StorageInstance < StorageEntity
+    # Instance id
+    getter id : Int64
+
     # Parent class
     getter parentClass : StorageClass
     
-    def initialize(id, name, @parentClass)
-        super(id, name)
+    def initialize(@id, @parentClass)
+        super(id)
     end
 end
 
 # Entity attribute
 class StorageAttribute < StorageEntity
-    def initialize(id, name)
-        super(id, name)
+    # Name of attribute
+    getter name : String
+
+    def initialize(@name)
     end
 end

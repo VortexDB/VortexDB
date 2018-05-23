@@ -9,15 +9,15 @@ class CommandProcessor
     end
 
     # Creates new class
-    def createClass(name : String, parentId : Int64?) : StorageClass
-        parent = @storage.getClassById(parentId) if !parentId.nil?
+    def createClass(name : String, parentName : String?) : StorageClass
+        parent = @storage.getClassByName(parentName) if !parentName.nil?
         return @storage.createClass(name, parent)
     end
 
     # Create new class attribute
-    def createClassAttribute(parentId : Int64, name : String, valueTypeStr : String) : StorageAttribute
-        parent = @storage.getClassById(parentId) if !parentId.nil?
-        vtype = valueTypeStr.toValueType
-        return @storage.createClassAttribute(parent, name, vtype)
-    end    
+    #def createClassAttribute(parentName : String, name : String, valueTypeStr : String) : StorageAttribute
+        #parent = @storage.getClassById(parentId) if !parentId.nil?
+        #vtype = valueTypeStr.toValueType
+        #return @storage.createClassAttribute(parent, name, vtype)
+    #end    
 end

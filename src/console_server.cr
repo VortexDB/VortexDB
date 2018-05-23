@@ -98,12 +98,10 @@ class ConsoleServer
   # Process create new class
   def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[2]
-    parentId = nil
-    if cmdList.size > 3
-      parentId = cmdList[3].to_i64
-    end
-    nclass = @commandProcessor.createClass(className, parentId)
-    client.sendLine("Class created id: #{nclass.id}")
+    parentName = nil    
+    parentName = cmdList[3] if cmdList.size > 3
+    nclass = @commandProcessor.createClass(className, parentName)
+    client.sendLine("Class created Name: #{nclass.name}")
   end
 
   # Process create new instance
@@ -117,7 +115,7 @@ class ConsoleServer
     attrName = cmdList[3]
     case cmdList[2]
     when "class"
-      processNewClassAttribute(client, cmdList) : Void
+      #processNewClassAttribute(client, cmdList)
     when "instance"
             
     else
