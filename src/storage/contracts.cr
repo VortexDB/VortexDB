@@ -1,12 +1,7 @@
-# Type for value
-enum ValueType
-    VInt,
-    VString,
-    VDouble
-end
+require "./value_type"
 
 # Base entity
-class StorageEntity    
+class StorageEntity
 end
 
 # Class entity
@@ -22,6 +17,17 @@ class StorageClass < StorageEntity
     
     def initialize(@name, @parentClass)
         @classAttributes = Hash(String, StorageAttribute).new
+    end
+
+    # Create class attribute
+    def createClassAttribute(name : String, valueType : ValueType) : StorageClassAttribute
+        if @classAttributes.has_key?(name)
+            raise VortexException.new("Attribute already exists")
+        end
+
+        nattr = StorageClassAttribute.new(self, name, valueType)
+        @classAttributes[name] = nattr
+        return nattr
     end
 end
 
@@ -43,6 +49,19 @@ class StorageAttribute < StorageEntity
     # Name of attribute
     getter name : String
 
-    def initialize(@name)
+    # Value type
+    getter valueType : ValueType
+
+    def initialize(@name, @valueType)
+    end
+end
+
+# Class attribute
+class StorageClassAttribute < StorageAttribute
+    # Parent class
+    getter parentClass : StorageClass
+    
+    def initialize(@parentClass, name, valueType)
+        super(name, valueType)
     end
 end

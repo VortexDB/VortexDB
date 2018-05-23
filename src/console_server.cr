@@ -101,6 +101,7 @@ class ConsoleServer
     parentName = nil    
     parentName = cmdList[3] if cmdList.size > 3
     nclass = @commandProcessor.createClass(className, parentName)
+    p nclass
     client.sendLine("Class created Name: #{nclass.name}")
   end
 
@@ -112,10 +113,9 @@ class ConsoleServer
 
   # Process create new attribute
   def processNewAttr(client : CommandClient, cmdList : Array(String)) : Void
-    attrName = cmdList[3]
     case cmdList[2]
     when "class"
-      #processNewClassAttribute(client, cmdList)
+      processNewClassAttribute(client, cmdList)
     when "instance"
             
     else
@@ -127,7 +127,9 @@ class ConsoleServer
 
   # Process create new class attribute
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    @commandProcessor.createAttribute()
+    nattr = @commandProcessor.createClassAttribute(cmdList[3], cmdList[4], cmdList[4])    
+    p nattr
+    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeName: #{nattr.name}")
   end
 
   # Запускает сервер

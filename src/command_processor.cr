@@ -15,9 +15,9 @@ class CommandProcessor
     end
 
     # Create new class attribute
-    #def createClassAttribute(parentName : String, name : String, valueTypeStr : String) : StorageAttribute
-        #parent = @storage.getClassById(parentId) if !parentId.nil?
-        #vtype = valueTypeStr.toValueType
-        #return @storage.createClassAttribute(parent, name, vtype)
-    #end    
+    def createClassAttribute(parentName : String, name : String, valueTypeStr : String) : StorageAttribute
+        parent = @storage.getClassByName(parentName).not_nil!
+        vtype = valueTypeStr.toValueType
+        return @storage.createClassAttribute(parent, name, vtype)
+    end    
 end
