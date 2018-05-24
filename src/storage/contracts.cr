@@ -2,6 +2,25 @@ require "./value_type"
 
 # Base entity
 class StorageEntity
+    class_property counter : Int64 = 0_i64
+
+    # Entity id
+    getter id : Int64
+
+    def initialize
+        @id = StorageEntity.counter
+        StorageEntity.counter += 1
+    end
+
+    # Calc hash
+    def hash
+        id
+    end
+
+    # Equals
+    def ==(obj)
+        hash == obj.hash
+    end
 end
 
 # Class entity
@@ -13,10 +32,11 @@ class StorageClass < StorageEntity
     getter parentClass : StorageClass?
 
     # Dictionary of class attributes
-    getter classAttributes : Hash(String, StorageAttribute)
+    getter classAttributes : Hash(String, StorageClassAttribute)
     
     def initialize(@name, @parentClass)
-        @classAttributes = Hash(String, StorageAttribute).new
+        @classAttributes = Hash(String, StorageClassAttribute).new
+        super()
     end
 
     # Create class attribute
@@ -29,18 +49,20 @@ class StorageClass < StorageEntity
         @classAttributes[name] = nattr
         return nattr
     end
+
+    # Return class attribute
+    def getClassAttribute(name) : StorageClassAttribute?
+        classAttributes[name]?
+    end
 end
 
 # Instance entity
-class StorageInstance < StorageEntity
-    # Instance id
-    getter id : Int64
-
+class StorageInstance < StorageEntity    
     # Parent class
     getter parentClass : StorageClass
     
-    def initialize(@id, @parentClass)
-        super(id)
+    def initialize(@parentClass)
+        super()
     end
 end
 
@@ -53,6 +75,7 @@ class StorageAttribute < StorageEntity
     getter valueType : ValueType
 
     def initialize(@name, @valueType)
+        super()
     end
 end
 
@@ -63,5 +86,18 @@ class StorageClassAttribute < StorageAttribute
     
     def initialize(@parentClass, name, valueType)
         super(name, valueType)
+    end
+end
+
+# Attribute with value
+class StorageAttributeWithValue
+    # Attribute info
+    getter attribute : StorageAttribute
+
+    # Value to store
+    property value : StorableValue
+
+    def initialize(@attribute, @value)
+        
     end
 end

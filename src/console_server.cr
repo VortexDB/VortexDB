@@ -25,19 +25,19 @@ class ConsoleServer
   # Сервер
   @server : TCPServer
 
-  # Порт на котором работает сервер
+  # Server port
   getter port : Int32
 
-  # Для обработки команд
+  # Command processor
   getter commandProcessor : CommandProcessor
-
-  # Конструктор
+  
   def initialize(@port, @commandProcessor)
     @server = TCPServer.new(@port)
     @server.recv_buffer_size = BUFFER_SIZE
   end
 
-  # Обрабатывает сообщение
+  # Process message
+  # TODO: method name
   def process(client : CommandClient, message : String) : Void
     cmdList = message.split(" ")
     puts cmdList
@@ -65,9 +65,8 @@ class ConsoleServer
     when "inst"
       # new inst (base) (name)
       processNewInstance(client, cmdList)
-    when "attr"
-      # new attr class (class name) (attribute name) (type)
-      processNewAttr(client, cmdList)
+    when "clattr"      
+      processNewClassAttribute(client, cmdList)
     else
       raise VortexException.new("Unknown command")
     end
@@ -86,13 +85,19 @@ class ConsoleServer
     end
   end
 
-  # Обрабатывает получение значения
+  # Process get value
   def processGetValue(client : CommandClient, cmdList : Array(String)) : Void
     
   end
 
-  # Обрабатывает установление значения
+  # Process set attribute value
   def processSetValue(client : CommandClient, cmdList : Array(String)) : Void    
+    case cmdList[1]
+    when "clattr"
+      processSetClassAttrValue(client, cmdList)
+    else
+      raise VortexException.new("Bad request")
+    end
   end
 
   # Process create new class
@@ -109,27 +114,22 @@ class ConsoleServer
   def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void
     instanceName = cmdList[2]
     #@commandProcessor.createInstance(instanceName)
-  end
-
-  # Process create new attribute
-  def processNewAttr(client : CommandClient, cmdList : Array(String)) : Void
-    case cmdList[2]
-    when "class"
-      processNewClassAttribute(client, cmdList)
-    when "instance"
-            
-    else
-      raise VortexException.new("Bad request")      
-    end
-
-    #@commandProcessor.createAttribute(instanceName)
-  end
+  end  
 
   # Process create new class attribute
+  # new clattr (class) (name) (valueType)
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    nattr = @commandProcessor.createClassAttribute(cmdList[3], cmdList[4], cmdList[4])    
+    nattr = @commandProcessor.createClassAttribute(cmdList[2], cmdList[3], cmdList[4])
     p nattr
-    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeName: #{nattr.name}")
+    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
+  end
+
+  # Set class attribute value
+  # set clattr (class) (name) (value)
+  def processSetClassAttrValue(client : CommandClient, cmdList : Array(String)) : Void
+    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[2], cmdList[3], cmdList[4])
+    p attrWithValue
+    client.sendLine("ok")
   end
 
   # Запускает сервер

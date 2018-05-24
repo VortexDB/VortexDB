@@ -20,4 +20,15 @@ class CommandProcessor
         vtype = valueTypeStr.toValueType
         return @storage.createClassAttribute(parent, name, vtype)
     end    
+
+    # Set class attribute value by attr name
+    def setClassAttributeValueByName(parentName : String, name : String, value : String) : StorageAttributeWithValue
+        parent = @storage.getClassByName(parentName).not_nil!
+        attr = parent.getClassAttribute(name)
+        if attr.nil?
+            raise VortexException.new("Attribute does not exists")
+        end
+        val = value.toValue(attr.valueType)        
+        @storage.setAttributeValue(attr, val)
+    end
 end
