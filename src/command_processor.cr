@@ -21,7 +21,7 @@ class CommandProcessor
         return @storage.createClassAttribute(parent, name, vtype)
     end    
 
-    # Set class attribute value by attr name
+    # Set class attribute value by attribute name
     def setClassAttributeValueByName(parentName : String, name : String, value : String) : StorageAttributeWithValue
         parent = @storage.getClassByName(parentName).not_nil!
         attr = parent.getClassAttribute(name)
@@ -30,5 +30,15 @@ class CommandProcessor
         end
         val = value.toValue(attr.valueType)        
         @storage.setAttributeValue(attr, val)
+    end
+
+    # Get class value by attribute name
+    def getClassAttributeValueByName(parentName : String, name : String) : StorageAttributeWithValue?
+        parent = @storage.getClassByName(parentName).not_nil!
+        attr = parent.getClassAttribute(name)
+        if attr.nil?
+            raise VortexException.new("Attribute does not exists")
+        end
+        @storage.getAttributeValue(attr)
     end
 end

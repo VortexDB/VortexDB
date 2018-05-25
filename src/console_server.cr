@@ -43,68 +43,31 @@ class ConsoleServer
     puts cmdList
 
     case cmdList[0]
-    when "new"
-      processNew(client,cmdList)
-    when "del"
-      processDelete(client, cmdList)
-    when "get"
-      processGetValue(client, cmdList)
-    when "set"
-      processSetValue(client, cmdList)
+    when "new_class"
+      processNewClass(client,cmdList)
+    when "new_clattr"
+      processNewClassAttribute(client,cmdList)
+    when "set_clattr_value"
+      processSetClassAttributeValue(client, cmdList)
+    when "get_clattr_value"
+      processGetClassAttributeValue(client, cmdList)
+    when "del_class"
+      #processDelete(client, cmdList)
+    when "del_clattr"
+      #processGetValue(client, cmdList)
+    when "del_instance"
+      #processSetValue(client, cmdList)
     else
       raise VortexException.new("Unknown command")
-    end
-  end
-  
-  # Обрабатывает команду new
-  def processNew(client : CommandClient, cmdList : Array(String)) : Void
-    case cmdList[1]
-    when "class"
-      # new class (name)
-      processNewClass(client, cmdList)
-    when "inst"
-      # new inst (base) (name)
-      processNewInstance(client, cmdList)
-    when "clattr"      
-      processNewClassAttribute(client, cmdList)
-    else
-      raise VortexException.new("Unknown command")
-    end
-  end
-
-  # Обрабатывает удаление
-  def processDelete(client : CommandClient, cmdList : Array(String)) : Void
-    case cmdList[1]
-    when "class"
-
-    when "inst"
-
-    when "attr"
-    else
-      raise VortexException.new("Bad request")
-    end
-  end
-
-  # Process get value
-  def processGetValue(client : CommandClient, cmdList : Array(String)) : Void
-    
-  end
-
-  # Process set attribute value
-  def processSetValue(client : CommandClient, cmdList : Array(String)) : Void    
-    case cmdList[1]
-    when "clattr"
-      processSetClassAttrValue(client, cmdList)
-    else
-      raise VortexException.new("Bad request")
     end
   end
 
   # Process create new class
+  # new_class (name)
   def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
-    className = cmdList[2]
+    className = cmdList[1]
     parentName = nil    
-    parentName = cmdList[3] if cmdList.size > 3
+    parentName = cmdList[2] if cmdList.size > 2
     nclass = @commandProcessor.createClass(className, parentName)
     p nclass
     client.sendLine("Class created Name: #{nclass.name}")
@@ -117,19 +80,31 @@ class ConsoleServer
   end  
 
   # Process create new class attribute
-  # new clattr (class) (name) (valueType)
+  # new_clattr (class) (name) (valueType)
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    nattr = @commandProcessor.createClassAttribute(cmdList[2], cmdList[3], cmdList[4])
+    nattr = @commandProcessor.createClassAttribute(cmdList[1], cmdList[2], cmdList[3])
     p nattr
     client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
   end
 
   # Set class attribute value
-  # set clattr (class) (name) (value)
-  def processSetClassAttrValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[2], cmdList[3], cmdList[4])
+  # set_clattr_value (class) (name) (value)
+  def processSetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
+    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])    
     p attrWithValue
-    client.sendLine("ok")
+    client.sendLine("ok")    
+  end
+
+  # Process get class attribute value
+  # get_clattr_value (class) (name)
+  def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void    
+    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])
+    if attrWithValue.nil?
+      client.sendLine("null")
+    else
+      p attrWithValue
+      client.sendLine(attrWithValue.value)
+    end    
   end
 
   # Запускает сервер

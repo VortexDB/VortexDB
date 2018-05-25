@@ -46,6 +46,11 @@ class Storage
         attrWithValue
     end
 
+    # Get attribute value
+    def getAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?
+        @attributeValues[attribute]?
+    end
+
     # Creates new instance attribute
     # def createInstanceAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageAttribute
     #     nclass = StorageClass.new(name, parent)
