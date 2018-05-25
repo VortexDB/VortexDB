@@ -68,9 +68,9 @@ class ConsoleServer
     className = cmdList[1]
     parentName = nil    
     parentName = cmdList[2] if cmdList.size > 2
-    nclass = @commandProcessor.createClass(className, parentName)
-    p nclass
-    client.sendLine("Class created Name: #{nclass.name}")
+    nclass = @commandProcessor.createClass(className, parentName)    
+    #p nclass
+    client.sendLine("Class created Id: #{nclass.id} Name: #{nclass.name} ParentName: #{parentName || "null"}")
   end
 
   # Process create new instance
@@ -83,7 +83,7 @@ class ConsoleServer
   # new_clattr (class) (name) (valueType)
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
     nattr = @commandProcessor.createClassAttribute(cmdList[1], cmdList[2], cmdList[3])
-    p nattr
+    #p nattr
     client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
   end
 
@@ -91,18 +91,18 @@ class ConsoleServer
   # set_clattr_value (class) (name) (value)
   def processSetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
     attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])    
-    p attrWithValue
+    #p attrWithValue
     client.sendLine("ok")    
   end
 
   # Process get class attribute value
   # get_clattr_value (class) (name)
   def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void    
-    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])
+    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])    
+
     if attrWithValue.nil?
       client.sendLine("null")
-    else
-      p attrWithValue
+    else      
       client.sendLine(attrWithValue.value)
     end    
   end

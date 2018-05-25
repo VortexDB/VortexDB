@@ -1,0 +1,6 @@
+version: 1.0
+shards:
+  msgpack:
+    github: crystal-community/msgpack-crystal
+    version: 0.8.0
+

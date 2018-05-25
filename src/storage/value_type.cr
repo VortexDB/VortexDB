@@ -8,7 +8,7 @@ enum ValueType
     # Double value
     Double,
     # String value
-    String    
+    String
 end
 
 # Extension for string

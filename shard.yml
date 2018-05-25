@@ -4,6 +4,10 @@ version: 0.1.0
 authors:
   - Grabli66 <grabli66@gmail.com>
 
+dependencies:
+  msgpack:
+    github: crystal-community/msgpack-crystal
+
 targets:
   vortexdb:
     main: src/vortexdb.cr

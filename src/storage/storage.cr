@@ -1,14 +1,18 @@
-require "./contracts"
+require "./storage_contracts"
+require "../data_logger/data_logger_contracts"
 
 # In-memory storage for entities
 class Storage
+    # For writing data to log
+    getter dataLogWriter : DataLogWriter
+
     # Classes
     @storageClasses : Hash(String, StorageClass)
 
     # Values for attributes
     @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
         
-    def initialize
+    def initialize(@dataLogWriter)
         @storageClasses = Hash(String, StorageClass).new
         @attributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
     end
@@ -22,6 +26,13 @@ class Storage
     def createClass(name : String, parent : StorageClass?) : StorageClass
         nclass = StorageClass.new(name, parent)
         @storageClasses[nclass.name] = nclass
+        @dataLogWriter.write(
+            NewClassLog.new(
+                id: nclass.id,
+                name: nclass.name,
+                parentName: parent.try &.name
+            )
+        )
         return nclass
     end
 
@@ -36,10 +47,10 @@ class Storage
 
     # Set attribute value by id
     def setAttributeValue(attribute : StorageAttribute, value : StorableValue) : StorageAttributeWithValue
-        # TODO: check attribute type
         attrWithValue = @attributeValues[attribute]?
         if attrWithValue.nil?
             attrWithValue = StorageAttributeWithValue.new(attribute, value)
+            @attributeValues[attribute] = attrWithValue
         else
             attrWithValue.value = value
         end
@@ -47,7 +58,7 @@ class Storage
     end
 
     # Get attribute value
-    def getAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?
+    def getAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?        
         @attributeValues[attribute]?
     end
 
