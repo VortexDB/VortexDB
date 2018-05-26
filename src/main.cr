@@ -6,9 +6,14 @@ require "./console_server"
 # Порт для обработки команда
 COMMAND_PORT = 26301
 
-dataLogger = DataLogWriter.new
+dataLogReader = DataLogReader.new
+dataLogReader.readByLine do |log|
+    p log
+end
 
-storage = Storage.new(dataLogger)
+dataLogWriter = DataLogWriter.new
+
+storage = Storage.new(dataLogWriter)
 commandProcessor = CommandProcessor.new(storage)
 consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
 consoleServer.start
