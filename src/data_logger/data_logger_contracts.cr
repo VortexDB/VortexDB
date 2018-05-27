@@ -1,7 +1,10 @@
 require "msgpack"
 
 # Base data log
-abstract class DataLog
+abstract class LogContract
+  # Class creators
+  class_property creators = Hash(String, Proc(IO, IO::ByteFormat, LogContract)).new
+
   macro mapping(**props)
     NAME = {{ @type.name.stringify }}    
 
@@ -13,6 +16,8 @@ abstract class DataLog
 
     def initialize({{ props.keys.map { |x| ("@" + x.stringify).id }.stringify[1...-1].id }})
     end
+
+    LogContract.creators[NAME] = ->(io : IO, format : IO::ByteFormat) { self.from_io(io, format).as(LogContract) }
   end
 
   # Write to IO
@@ -21,21 +26,31 @@ abstract class DataLog
     io.write_bytes(data.size.to_i64)
     io.write(data)
   end  
-end
-
-# New class log
-class NewClassLog < DataLog
-  mapping(
-    id: Int64,
-    name: String,
-    parentName: String?
-  )
 
   # Read from IO
-  def self.from_io(io, format) : self
+  def self.from_io(io, format)
     dataSize = io.read_bytes(Int64)
     buff = Bytes.new(dataSize)
     io.read(buff)
-    NewClassLog.from_msgpack(buff)
+    self.from_msgpack(buff)
   end
+end
+
+# New class
+class NewClassLog < LogContract
+  mapping(
+    id: Int64,
+    name: String,
+    parentId: Int64?
+  )
+end
+
+# New class attribute
+class NewClassAttributeLog < LogContract
+  mapping(
+    id: Int64,
+    parentName: String,
+    name: String,
+    valueType: String    
+  )
 end

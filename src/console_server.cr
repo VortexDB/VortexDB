@@ -1,3 +1,4 @@
+require "benchmark"
 require "socket"
 require "./vortex_exeption"
 require "./command_processor"
@@ -39,8 +40,7 @@ class ConsoleServer
   # Process message
   # TODO: method name
   def process(client : CommandClient, message : String) : Void
-    cmdList = message.split(" ")
-    puts cmdList
+    cmdList = message.split(" ")    
 
     case cmdList[0]
     when "new_class"
@@ -115,15 +115,20 @@ class ConsoleServer
       commandClient = CommandClient.new(client)
 
       spawn do
-        loop do
-          message = client.gets
-          next unless message
+        loop do          
           begin
+            message = client.gets
+            next unless message
+            
+            puts message
             if message.starts_with?("exit")
               client.close
               break
             end
-            process(commandClient, message)
+            bench = Benchmark.realtime do
+              process(commandClient, message)
+            end
+            puts bench       
           rescue e : VortexException
             puts e.backtrace
             commandClient.sendLine(e.message!)

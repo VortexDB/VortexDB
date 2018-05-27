@@ -30,7 +30,7 @@ class Storage
             NewClassLog.new(
                 id: nclass.id,
                 name: nclass.name,
-                parentName: parent.try &.name
+                parentId: parent.try &.id
             )
         )
         return nclass
@@ -42,7 +42,16 @@ class Storage
 
     # Creates new class attribute
     def createClassAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageClassAttribute        
-        return parent.createClassAttribute(name, valueType)
+        nattr = parent.createClassAttribute(name, valueType)
+        @dataLogWriter.write(
+            NewClassAttributeLog.new(
+                id: nattr.id,
+                parentName: nattr.parentClass.name,
+                name: nattr.name,
+                valueType: nattr.valueType.to_s
+            )
+        )
+        return nattr
     end
 
     # Set attribute value by id

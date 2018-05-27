@@ -16,7 +16,7 @@ class DataLogWriter
   end
 
   # Write data to log
-  def write(dataLog : DataLog) : Void
+  def write(dataLog : LogContract) : Void
     p dataLog
     @file.write_bytes(dataLog.contract.size.to_i32)
     @file << dataLog.contract
@@ -31,7 +31,7 @@ class DataLogReader
   end
 
   # Read log by line
-  def readByLine(&block : DataLog -> _)    
+  def readByLine(&block : LogContract -> _)    
     return unless File.exists?(DataLogConsts::LOG_FILE_NAME)
     file = File.open(DataLogConsts::LOG_FILE_NAME)
 
@@ -40,16 +40,10 @@ class DataLogReader
         nameSize = file.read_bytes(Int32)
         name = file.read_string(nameSize)
 
-        dataLog : DataLog?
-        case name
-        when NewClassLog::NAME
-          dataLog = file.read_bytes(NewClassLog)
-        else
-        end
-
-        if dataLog
-          yield dataLog
-        end
+        creator = LogContract.creators[name]?
+        next if creator.nil?
+        dataLog = creator.call(file, IO::ByteFormat::SystemEndian)
+        yield dataLog
       end
     rescue e : IO::EOFError
       # Ignore
