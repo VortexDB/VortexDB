@@ -47,6 +47,8 @@ class DataLogReader
       end
     rescue e : IO::EOFError
       # Ignore
+    ensure
+      file.close
     end
   end
 end

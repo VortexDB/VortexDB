@@ -11,12 +11,11 @@ COMMAND_PORT = 26301
 database = Database.new
 logReader = DataLogReader.new
 logDumper = DataLogDumper.new(database, logReader)
-
 logDumper.dump
 
 dataLogWriter = DataLogWriter.new
+storage = Storage.new(database, dataLogWriter)
 
-storage = Storage.new(dataLogWriter)
 commandProcessor = CommandProcessor.new(storage)
 consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
 consoleServer.start

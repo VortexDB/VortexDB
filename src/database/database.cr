@@ -45,4 +45,9 @@ class Database
             raise VortexException.new("Unknown database contract")
         end
     end
+
+    # Iterates classes
+    def allClasses : Array(DBClass)
+        @database.query_all("SELECT id, name, parentId FROM t_classes", as: DBClass)
+    end
 end

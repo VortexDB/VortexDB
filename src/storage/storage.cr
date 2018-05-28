@@ -3,6 +3,9 @@ require "../data_logger/data_logger_contracts"
 
 # In-memory storage for entities
 class Storage
+    # For working with database
+    getter database : Database
+
     # For writing data to log
     getter dataLogWriter : DataLogWriter
 
@@ -11,10 +14,24 @@ class Storage
 
     # Values for attributes
     @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
-        
-    def initialize(@dataLogWriter)
+    
+    # Read entities from database
+    private def readEntities
+        maxId = 0
+
+        @database.allClasses.each do |cls|
+            @storageClasses[cls.name] = StorageClass.new(cls.name, nil)
+            maxId = cls.id if maxId < cls.id
+        end
+
+        StorageEntity.counter = 1_i64 + maxId.to_i64
+    end
+
+    def initialize(@database, @dataLogWriter)
         @storageClasses = Hash(String, StorageClass).new
         @attributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
+
+        readEntities
     end
 
     # Returns class by name

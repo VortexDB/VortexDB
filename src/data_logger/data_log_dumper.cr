@@ -23,8 +23,10 @@ class DataLogDumper
                     parentId: line.parentId
                 ))
             else
-                
+                raise VortexException.new("Unknown log type")
             end
         end
+
+        File.delete(DataLogConsts::LOG_FILE_NAME)
     end
 end
