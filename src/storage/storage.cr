@@ -63,7 +63,7 @@ class Storage
         @dataLogWriter.write(
             NewClassAttributeLog.new(
                 id: nattr.id,
-                parentName: nattr.parentClass.name,
+                parentId: nattr.parentClass.id,
                 name: nattr.name,
                 valueType: nattr.valueType.to_s
             )

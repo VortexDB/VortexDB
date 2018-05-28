@@ -16,11 +16,21 @@ class DatabaseContract
       end
 end
 
-# New class contract
+# Database class
 class DBClass < DatabaseContract
     mapping(
         id: Int64,
         name: String,
         parentId: Int64?
+    )
+end
+
+# Database class attribute
+class DBClassAttribute < DatabaseContract
+    mapping(
+        id: Int64,
+        name: String,
+        parentId: Int64,
+        valueType: String
     )
 end

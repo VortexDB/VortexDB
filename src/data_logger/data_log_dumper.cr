@@ -1,4 +1,3 @@
-require "./data_logger"
 require "../database/database"
 
 # Dump data log to database
@@ -14,13 +13,22 @@ class DataLogDumper
 
     # Dump log to database
     def dump : Void
-        @logReader.readByLine do |line|
-            case line
+        return unless File.exists?(DataLogConsts::LOG_FILE_NAME)
+
+        @logReader.readByLine do |item|
+            case item
             when NewClassLog
                 @database.write(DBClass.new(
-                    id: line.id,
-                    name: line.name,
-                    parentId: line.parentId
+                    id: item.id,
+                    name: item.name,
+                    parentId: item.parentId
+                ))
+            when NewClassAttributeLog
+                @database.write(DBClassAttribute.new(
+                    id: item.id,
+                    name: item.name,
+                    parentId: item.parentId,
+                    valueType: item.valueType
                 ))
             else
                 raise VortexException.new("Unknown log type")

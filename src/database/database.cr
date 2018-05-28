@@ -18,7 +18,23 @@ class Database
     # Create and prepare database
     private def createDatabase
         base = openDatabase
-        base.exec("CREATE TABLE t_classes(id integer PRIMARY KEY, name TEXT NOT NULL, parentId INTEGER)")
+        base.exec("CREATE TABLE t_classes(
+            id integer PRIMARY KEY, 
+            name TEXT NOT NULL, 
+            parentId INTEGER)")
+        base.exec("CREATE TABLE t_attributes(
+            id integer PRIMARY KEY, 
+            name TEXT NOT NULL, 
+            parentId INTEGER, 
+            valueType TEXT NOT NULL,
+            isClass INTEGER)")
+
+        base.exec("CREATE TABLE t_values(
+            id integer PRIMARY KEY,
+            value TEXT
+        )
+        ")
+
         base.exec("CREATE UNIQUE INDEX t_classes_idx ON t_classes(name)")
         base
     end
@@ -41,6 +57,8 @@ class Database
         case data
         when DBClass            
             @database.exec("INSERT INTO t_classes VALUES(?,?,?)", data.id, data.name, data.parentId || -1)
+        when DBClassAttribute                      
+            @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,1)", data.id, data.name, data.parentId, data.valueType)
         else
             raise VortexException.new("Unknown database contract")
         end
