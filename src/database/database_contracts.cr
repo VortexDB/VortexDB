@@ -34,3 +34,11 @@ class DBClassAttribute < DatabaseContract
         valueType: String
     )
 end
+
+# Attribute value
+class DBAttributeValue < DatabaseContract
+    mapping(
+        attributeId: Int64,
+        value: String
+    )
+end

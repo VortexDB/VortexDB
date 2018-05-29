@@ -30,7 +30,7 @@ class Database
             isClass INTEGER)")
 
         base.exec("CREATE TABLE t_values(
-            id integer PRIMARY KEY,
+            attributeId integer,
             value TEXT
         )
         ")
@@ -59,6 +59,8 @@ class Database
             @database.exec("INSERT INTO t_classes VALUES(?,?,?)", data.id, data.name, data.parentId || -1)
         when DBClassAttribute                      
             @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,1)", data.id, data.name, data.parentId, data.valueType)
+        when DBAttributeValue
+            @database.exec("INSERT INTO t_values VALUES(?,?)", data.attributeId, data.value)
         else
             raise VortexException.new("Unknown database contract")
         end

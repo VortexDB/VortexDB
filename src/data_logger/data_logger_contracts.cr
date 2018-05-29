@@ -57,5 +57,8 @@ end
 
 # Set attribute value
 class SetAttributeValueLog < LogContract
-  
+  mapping(
+    attributeId: Int64,
+    value: String
+  )
 end

@@ -30,7 +30,12 @@ class DataLogDumper
                     parentId: item.parentId,
                     valueType: item.valueType
                 ))
-            else
+            when SetAttributeValueLog
+                @database.write(DBAttributeValue.new(
+                    attributeId: item.attributeId,
+                    value: item.value
+                ))
+            else                
                 raise VortexException.new("Unknown log type")
             end
         end

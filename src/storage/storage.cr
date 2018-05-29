@@ -80,7 +80,15 @@ class Storage
         else
             attrWithValue.value = value
         end
-        attrWithValue
+
+        @dataLogWriter.write(
+            SetAttributeValueLog.new(
+                attributeId: attribute.id,
+                value: value.to_s
+            )
+        )
+
+        return attrWithValue
     end
 
     # Get attribute value

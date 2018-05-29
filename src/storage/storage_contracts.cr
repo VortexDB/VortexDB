@@ -97,7 +97,6 @@ class StorageAttributeWithValue
     # Value to store
     property value : StorableValue
 
-    def initialize(@attribute, @value)
-        
+    def initialize(@attribute, @value)        
     end
 end
