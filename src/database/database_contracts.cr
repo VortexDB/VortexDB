@@ -25,8 +25,22 @@ class DBClass < DatabaseContract
     )
 end
 
+# Base attribute
+class DBAttribute < DatabaseContract
+end
+
 # Database class attribute
-class DBClassAttribute < DatabaseContract
+class DBClassAttribute < DBAttribute
+    mapping(
+        id: Int64,
+        name: String,
+        parentId: Int64,
+        valueType: String
+    )
+end
+
+# Database instance attribute
+class DBInstanceAttribute < DBAttribute
     mapping(
         id: Int64,
         name: String,

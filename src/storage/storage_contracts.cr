@@ -12,6 +12,9 @@ class StorageEntity
         StorageEntity.counter += 1
     end
 
+    def initialize(@id)        
+    end
+
     # Calc hash
     def hash
         id
@@ -39,6 +42,11 @@ class StorageClass < StorageEntity
         super()
     end
 
+    def initialize(id, @name, @parentClass)
+        @classAttributes = Hash(String, StorageClassAttribute).new
+        super(id)
+    end
+
     # Create class attribute
     def createClassAttribute(name : String, valueType : ValueType) : StorageClassAttribute
         if @classAttributes.has_key?(name)
@@ -46,6 +54,18 @@ class StorageClass < StorageEntity
         end
 
         nattr = StorageClassAttribute.new(self, name, valueType)
+        @classAttributes[name] = nattr
+        return nattr
+    end
+
+    # Create class attribute with id
+    def createClassAttribute(id : Int64, name : String, valueType : ValueType) : StorageClassAttribute
+        # TODO: refactor
+        if @classAttributes.has_key?(name)
+            raise VortexException.new("Attribute already exists")
+        end
+
+        nattr = StorageClassAttribute.new(self, id, name, valueType)
         @classAttributes[name] = nattr
         return nattr
     end
@@ -77,6 +97,10 @@ class StorageAttribute < StorageEntity
     def initialize(@name, @valueType)
         super()
     end
+
+    def initialize(@id, @name, @valueType)
+        super()
+    end
 end
 
 # Class attribute
@@ -86,6 +110,10 @@ class StorageClassAttribute < StorageAttribute
     
     def initialize(@parentClass, name, valueType)
         super(name, valueType)
+    end
+
+    def initialize(@parentClass, id, name, valueType)
+        super(id, name, valueType)
     end
 end
 

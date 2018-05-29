@@ -57,17 +57,50 @@ class Database
         case data
         when DBClass            
             @database.exec("INSERT INTO t_classes VALUES(?,?,?)", data.id, data.name, data.parentId || -1)
-        when DBClassAttribute                      
+        when DBClassAttribute            
             @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,1)", data.id, data.name, data.parentId, data.valueType)
         when DBAttributeValue
-            @database.exec("INSERT INTO t_values VALUES(?,?)", data.attributeId, data.value)
+            row = @database.query_one?("SELECT attributeId FROM t_value WHERE attributeId=?", data.attributeId, as: {Int64})
+            if row.nil?
+                @database.exec("INSERT INTO t_values VALUES(?,?)", data.attributeId, data.value)
+            else
+                @database.exec("UPDATE t_values SET value=? WHERE attributeId=?", data.value, data.attributeId)
+            end            
         else
             raise VortexException.new("Unknown database contract")
         end
     end
 
-    # Iterates classes
+    # Return all classes
     def allClasses : Array(DBClass)
         @database.query_all("SELECT id, name, parentId FROM t_classes", as: DBClass)
+    end
+
+    # Return all attributes
+    def allAttributes(&block : DBAttribute -> _) : Void
+        @database.query("SELECT id, name, parentId, valueType, isClass FROM t_attributes") do |rs|
+            rs.each do
+                id = rs.read(Int64)
+                name = rs.read(String)
+                parentId = rs.read(Int64)
+                valueType = rs.read(String)
+                isClass = rs.read(Int32)
+                if isClass > 0
+                    yield DBClassAttribute.new(
+                        id: id,
+                        name: name,
+                        parentId: parentId,
+                        valueType: valueType
+                    )
+                else
+                    yield DBInstanceAttribute.new(
+                        id: id,
+                        name: name,
+                        parentId: parentId,
+                        valueType: valueType
+                    )
+                end
+            end
+        end
     end
 end

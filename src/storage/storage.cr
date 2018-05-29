@@ -19,9 +19,25 @@ class Storage
     private def readEntities
         maxId = 0
 
+        classesById = Hash(Int64, StorageClass).new
+
         @database.allClasses.each do |cls|
-            @storageClasses[cls.name] = StorageClass.new(cls.name, nil)
+            cls = StorageClass.new(cls.id, cls.name, nil)
+            @storageClasses[cls.name] = cls
+            classesById[cls.id] = cls
             maxId = cls.id if maxId < cls.id
+        end
+
+        @database.allAttributes do |attr|
+            case attr
+            when DBClassAttribute
+                cls = classesById[attr.parentId]?                
+                if !cls.nil?
+                    cls.createClassAttribute(attr.id, attr.name, ValueType::String)
+                end
+            else
+                
+            end
         end
 
         StorageEntity.counter = 1_i64 + maxId.to_i64
