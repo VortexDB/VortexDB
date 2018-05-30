@@ -60,7 +60,7 @@ class Database
         when DBClassAttribute            
             @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,1)", data.id, data.name, data.parentId, data.valueType)
         when DBAttributeValue
-            row = @database.query_one?("SELECT attributeId FROM t_value WHERE attributeId=?", data.attributeId, as: {Int64})
+            row = @database.query_one?("SELECT attributeId FROM t_values WHERE attributeId=?", data.attributeId, as: {Int64})
             if row.nil?
                 @database.exec("INSERT INTO t_values VALUES(?,?)", data.attributeId, data.value)
             else
@@ -100,6 +100,18 @@ class Database
                         valueType: valueType
                     )
                 end
+            end
+        end
+    end
+
+    # Return all values
+    def allValues(&block : DBAttributeValue -> _)
+        @database.query("SELECT attributeId, value FROM t_values") do |rs|
+            rs.each do
+                yield DBAttributeValue.new(
+                    attributeId: rs.read(Int64),
+                    value: rs.read(String)
+                )
             end
         end
     end

@@ -1,3 +1,4 @@
+require "benchmark"
 require "./storage_contracts"
 require "../data_logger/data_logger_contracts"
 
@@ -16,38 +17,55 @@ class Storage
     @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
     
     # Read entities from database
-    private def readEntities
-        maxId = 0
-
+    private def readEntities        
         classesById = Hash(Int64, StorageClass).new
 
+        classMaxId = 0
         @database.allClasses.each do |cls|
             cls = StorageClass.new(cls.id, cls.name, nil)
             @storageClasses[cls.name] = cls
             classesById[cls.id] = cls
-            maxId = cls.id if maxId < cls.id
+            classMaxId = cls.id if classMaxId < cls.id
         end
+        StorageClass.counter = 1_i64 + classMaxId.to_i64
 
+        attributesById = Hash(Int64, StorageAttribute).new
+
+        attrMaxId = 0
         @database.allAttributes do |attr|
+            attrMaxId = attr.id if classMaxId < attr.id
             case attr
             when DBClassAttribute
                 cls = classesById[attr.parentId]?                
                 if !cls.nil?
-                    cls.createClassAttribute(attr.id, attr.name, ValueType::String)
+                    nattr = cls.createClassAttribute(attr.id, attr.name, ValueType::String)
+                    attributesById[attr.id] = nattr                    
                 end
+            when DBInstanceAttribute
+
             else
-                
+                raise VortexException.new("Unknown attribute type")
             end
         end
+        StorageAttribute.counter = 1_i64 + attrMaxId.to_i64
 
-        StorageEntity.counter = 1_i64 + maxId.to_i64
+        @database.allValues do |value|
+            attr = attributesById[value.attributeId]?
+            if !attr.nil?
+                @attributeValues[attr] = StorageAttributeWithValue.new(
+                    attribute: attr,
+                    value: value.value.toValue(attr.valueType)
+                )
+            end
+        end        
     end
 
     def initialize(@database, @dataLogWriter)
         @storageClasses = Hash(String, StorageClass).new
         @attributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
 
-        readEntities
+        b = Benchmark.realtime { readEntities }
+        puts "Read entities: #{b}"
     end
 
     # Returns class by name

@@ -26,7 +26,12 @@ class DBClass < DatabaseContract
 end
 
 # Base attribute
-class DBAttribute < DatabaseContract
+abstract class DBAttribute < DatabaseContract   
+    # Returns id of attribute 
+    abstract def id : Int64
+
+    # Returns name of attribute 
+    abstract def name : String
 end
 
 # Database class attribute

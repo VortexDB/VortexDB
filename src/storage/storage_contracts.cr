@@ -1,16 +1,9 @@
 require "./value_type"
 
 # Base entity
-class StorageEntity
-    class_property counter : Int64 = 0_i64
-
+class StorageEntity    
     # Entity id
     getter id : Int64
-
-    def initialize
-        @id = StorageEntity.counter
-        StorageEntity.counter += 1
-    end
 
     def initialize(@id)        
     end
@@ -28,6 +21,9 @@ end
 
 # Class entity
 class StorageClass < StorageEntity
+    # Counter for class id
+    class_property counter : Int64 = 0_i64
+
     # Название сущности
     getter name : String
 
@@ -39,7 +35,8 @@ class StorageClass < StorageEntity
     
     def initialize(@name, @parentClass)
         @classAttributes = Hash(String, StorageClassAttribute).new
-        super()
+        StorageClass.counter += 1
+        super(StorageClass.counter)
     end
 
     def initialize(id, @name, @parentClass)
@@ -88,6 +85,9 @@ end
 
 # Entity attribute
 class StorageAttribute < StorageEntity
+     # Counter for attribute id
+     class_property counter : Int64 = 0_i64
+
     # Name of attribute
     getter name : String
 
@@ -95,11 +95,12 @@ class StorageAttribute < StorageEntity
     getter valueType : ValueType
 
     def initialize(@name, @valueType)
-        super()
+        StorageAttribute.counter += 1
+        super(StorageAttribute.counter)
     end
 
-    def initialize(@id, @name, @valueType)
-        super()
+    def initialize(id, @name, @valueType)
+        super(id)
     end
 end
 
@@ -118,13 +119,14 @@ class StorageClassAttribute < StorageAttribute
 end
 
 # Attribute with value
-class StorageAttributeWithValue
+class StorageAttributeWithValue < StorageEntity
     # Attribute info
     getter attribute : StorageAttribute
 
     # Value to store
     property value : StorableValue
 
-    def initialize(@attribute, @value)        
+    def initialize(@attribute, @value)
+        super(0_i64)
     end
 end
