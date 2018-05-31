@@ -31,16 +31,17 @@ class StorageClass < StorageEntity
     getter parentClass : StorageClass?
 
     # Dictionary of class attributes
-    getter classAttributes : Hash(String, StorageClassAttribute)
-    
+    getter classAttributes = Hash(String, StorageClassAttribute).new
+
+    # Dictionary of instance attributes
+    getter instanceAttributes = Hash(String, StorageInstanceAttribute).new
+
     def initialize(@name, @parentClass)
-        @classAttributes = Hash(String, StorageClassAttribute).new
         StorageClass.counter += 1
         super(StorageClass.counter)
     end
 
-    def initialize(id, @name, @parentClass)
-        @classAttributes = Hash(String, StorageClassAttribute).new
+    def initialize(id, @name, @parentClass)        
         super(id)
     end
 
@@ -74,11 +75,14 @@ class StorageClass < StorageEntity
 end
 
 # Instance entity
-class StorageInstance < StorageEntity    
+class StorageInstance < StorageEntity
+    # Instance name
+    getter name : String
+
     # Parent class
     getter parentClass : StorageClass
     
-    def initialize(@parentClass)
+    def initialize(@name, @parentClass)
         super()
     end
 end
@@ -109,6 +113,20 @@ class StorageClassAttribute < StorageAttribute
     # Parent class
     getter parentClass : StorageClass
     
+    def initialize(@parentClass, name, valueType)
+        super(name, valueType)
+    end
+
+    def initialize(@parentClass, id, name, valueType)
+        super(id, name, valueType)
+    end
+end
+
+# Instance attribute
+class StorageInstanceAttribute < StorageAttribute
+    # Parent class
+    getter parentClass : StorageClass
+
     def initialize(@parentClass, name, valueType)
         super(name, valueType)
     end

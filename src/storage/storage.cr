@@ -11,7 +11,7 @@ class Storage
     getter dataLogWriter : DataLogWriter
 
     # Classes
-    @storageClasses : Hash(String, StorageClass)
+    @storageClasses : Hash(String, StorageClass)    
 
     # Values for attributes
     @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
@@ -62,6 +62,7 @@ class Storage
 
     def initialize(@database, @dataLogWriter)
         @storageClasses = Hash(String, StorageClass).new
+        @storageInstances = Hash(Int64, StorageInstance).new
         @attributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
 
         b = Benchmark.realtime { readEntities }
@@ -89,6 +90,15 @@ class Storage
 
     # Create new instance
     def createInstance(name : String, parentClass : StorageClass) : StorageInstance
+        ninstance = StorageInstance.new(name, parentClass)
+        @storageInstances[ninstance.id] = ninstance
+        @dataLogWriter.write(
+            NewInstanceLog.new(
+                id: ninstance.id,
+                name: ninstance.name,
+                parentId: ninstance.parent.id
+            )
+        )
     end
 
     # Creates new class attribute
@@ -103,6 +113,11 @@ class Storage
             )
         )
         return nattr
+    end
+
+    # Create instance attribute
+    def createInstanceAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageInstanceAttribute
+        nattr = parent.createInstanceAttribute(name, valueType)
     end
 
     # Set attribute value by id
@@ -129,10 +144,4 @@ class Storage
     def getAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?        
         @attributeValues[attribute]?
     end
-
-    # Creates new instance attribute
-    # def createInstanceAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageAttribute
-    #     nclass = StorageClass.new(name, parent)
-    #     return nclass.createClassAttribute(name, valueType)
-    # end
 end

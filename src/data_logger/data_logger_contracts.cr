@@ -45,6 +45,15 @@ class NewClassLog < LogContract
   )
 end
 
+# New instance
+class NewInstanceLog < LogContract
+  mapping(
+    id: Int64,
+    name: String,
+    parentId: Int64
+  )
+end
+
 # New class attribute
 class NewClassAttributeLog < LogContract
   mapping(
@@ -52,6 +61,16 @@ class NewClassAttributeLog < LogContract
     parentId: Int64,
     name: String,
     valueType: String    
+  )
+end
+
+# New class attribute
+class NewInstanceAttributeLog < LogContract
+  mapping(
+    id: Int64,
+    parentId: Int64,
+    name: String,
+    valueType: String
   )
 end
 
