@@ -49,7 +49,6 @@ end
 class NewInstanceLog < LogContract
   mapping(
     id: Int64,
-    name: String,
     parentId: Int64
   )
 end
@@ -68,8 +67,8 @@ end
 class NewInstanceAttributeLog < LogContract
   mapping(
     id: Int64,
-    parentId: Int64,
     name: String,
+    parentId: Int64,
     valueType: String
   )
 end
