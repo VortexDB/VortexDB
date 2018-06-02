@@ -9,7 +9,7 @@ class CommandClient
   getter socket : Socket
 
   # Конструктор
-  def initialize(@socket)    
+  def initialize(@socket)
   end
 
   # Отправляет строку с переводом строки
@@ -31,7 +31,7 @@ class ConsoleServer
 
   # Command processor
   getter commandProcessor : CommandProcessor
-  
+
   def initialize(@port, @commandProcessor)
     @server = TCPServer.new(@port)
     @server.recv_buffer_size = BUFFER_SIZE
@@ -40,23 +40,27 @@ class ConsoleServer
   # Process message
   # TODO: method name
   def process(client : CommandClient, message : String) : Void
-    cmdList = message.split(" ")    
+    cmdList = message.split(" ")
 
     case cmdList[0]
     when "new_class"
-      processNewClass(client,cmdList)
+      processNewClass(client, cmdList)
+    when "new_inst"
+      processNewInstance(client, cmdList)
     when "new_clattr"
-      processNewClassAttribute(client,cmdList)
+      processNewClassAttribute(client, cmdList)
+    when "new_instattr"
+      processNewInstanceAttribute(client, cmdList)
     when "set_clattr_value"
       processSetClassAttributeValue(client, cmdList)
     when "get_clattr_value"
       processGetClassAttributeValue(client, cmdList)
     when "del_class"
-      #processDelete(client, cmdList)
+      # processDelete(client, cmdList)
     when "del_clattr"
-      #processGetValue(client, cmdList)
+      # processGetValue(client, cmdList)
     when "del_instance"
-      #processSetValue(client, cmdList)
+      # processSetValue(client, cmdList)
     else
       raise VortexException.new("Unknown command")
     end
@@ -66,45 +70,58 @@ class ConsoleServer
   # new_class (name)
   def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[1]
-    parentName = nil    
+    parentName = nil
     parentName = cmdList[2] if cmdList.size > 2
-    nclass = @commandProcessor.createClass(className, parentName)    
-    #p nclass
+    nclass = @commandProcessor.createClass(className, parentName)
+    # p nclass
     client.sendLine("Class created Id: #{nclass.id} Name: #{nclass.name} ParentName: #{parentName || "null"}")
   end
 
   # Process create new instance
-  def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void
-    instanceName = cmdList[2]
-    #@commandProcessor.createInstance(instanceName)
-  end  
+  def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void    
+    parentName = cmdList[1]
+    ninst = @commandProcessor.createInstance(parentName)
+    p ninst
+    client.sendLine("Instance created Id: #{ninst.id} ClassName: #{parentName}")
+  end
 
   # Process create new class attribute
   # new_clattr (class) (name) (valueType)
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    nattr = @commandProcessor.createClassAttribute(cmdList[1], cmdList[2], cmdList[3])
-    #p nattr
+    className = cmdList[1]
+    name = cmdList[2]
+    valueTypeStr = cmdList[3]
+    nattr = @commandProcessor.createClassAttribute(className, name, valueTypeStr)
+    # p nattr
     client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
+  end
+
+  # new_instattr (instanceId) (name) (valueType)
+  def processNewInstanceAttribute(client : CommandClient, cmdList : Array(String)) : Void
+    instanceId = cmdList[1].to_i64
+    name = cmdList[2]
+    valueTypeStr = cmdList[3]
+    nattr = @commandProcessor.createInstanceAttribute(instanceId, name, valueTypeStr)
   end
 
   # Set class attribute value
   # set_clattr_value (class) (name) (value)
   def processSetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])    
-    #p attrWithValue
-    client.sendLine("ok")    
+    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])
+    # p attrWithValue
+    client.sendLine("ok")
   end
 
   # Process get class attribute value
   # get_clattr_value (class) (name)
-  def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void    
-    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])    
+  def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
+    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])
 
     if attrWithValue.nil?
       client.sendLine("null")
-    else      
+    else
       client.sendLine(attrWithValue.value)
-    end    
+    end
   end
 
   # Запускает сервер
@@ -115,11 +132,11 @@ class ConsoleServer
       commandClient = CommandClient.new(client)
 
       spawn do
-        loop do          
+        loop do
           begin
             message = client.gets
             next unless message
-            
+
             puts message
             if message.starts_with?("exit")
               client.close
@@ -128,7 +145,7 @@ class ConsoleServer
             bench = Benchmark.realtime do
               process(commandClient, message)
             end
-            puts bench       
+            puts bench
           rescue e : VortexException
             puts e.backtrace
             commandClient.sendLine(e.message!)

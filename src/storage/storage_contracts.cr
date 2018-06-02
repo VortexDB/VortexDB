@@ -39,7 +39,7 @@ class StorageClass < StorageEntity
 
     # Check class already has attribute with [name]
     def hasAttribute(name : String) : Bool
-        return @classAttributes.has_key?(name)
+        return @classAttributes.has_key?(name) || @instanceAttributes.has_key?(name)
     end
 
     # Add atribute
@@ -69,8 +69,8 @@ class StorageInstance < StorageEntity
     # Parent class
     getter parentClass : StorageClass
     
-    def initialize(@parentClass)
-        super()
+    def initialize(id, @parentClass)
+        super(id)
     end
 end
 

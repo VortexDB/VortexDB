@@ -14,12 +14,27 @@ class CommandProcessor
         return @storage.createClass(name, parent)
     end
 
+    # Create new instance
+    def createInstance(parentName : String) : StorageInstance
+        parent = @storage.getClassByName(parentName)
+        raise VortexException.new("Class does not exists") if parent.nil?
+        return @storage.createInstance(parent)
+    end
+
     # Create new class attribute
     def createClassAttribute(parentName : String, name : String, valueTypeStr : String) : StorageAttribute
         parent = @storage.getClassByName(parentName).not_nil!
-        vtype = valueTypeStr.toValueType
-        return @storage.createClassAttribute(parent, name, vtype)
-    end    
+        valueType = valueTypeStr.toValueType
+        return @storage.createClassAttribute(parent, name, valueType)
+    end  
+    
+    # Create new instance attribute
+    def createInstanceAttribute(instanceId : Int64, name : String, valueTypeStr : String) : StorageAttribute
+        instance = storage.getInstanceById(instanceId)
+        raise VortexException.new("Instance does not exists") if instance.nil?
+        valueType = valueTypeStr.toValueType
+        return @storage.createInstanceAttribute(instance.parentClass, instanceId, name, valueType)  
+    end
 
     # Set class attribute value by attribute name
     def setClassAttributeValueByName(parentName : String, name : String, value : String) : StorageAttributeWithValue
@@ -40,5 +55,5 @@ class CommandProcessor
             raise VortexException.new("Attribute does not exists")
         end
         @storage.getAttributeValue(attr)
-    end
+    end        
 end

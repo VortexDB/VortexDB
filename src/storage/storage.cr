@@ -12,18 +12,21 @@ class Storage
 
   # Counter for attributes
   class_property attributeCounter : Int64 = 0_i64
+    
+  # Classes
+  @storageClasses : Hash(String, StorageClass)
+
+  # Instances
+  @storageInstances : Hash(Int64, StorageInstance)
+
+  # Values for attributes
+  @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
 
   # For working with database
   getter database : Database
 
   # For writing data to log
   getter dataLogWriter : DataLogWriter
-
-  # Classes
-  @storageClasses : Hash(String, StorageClass)
-
-  # Values for attributes
-  @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
 
   # Read entities from database
   private def readEntities
@@ -47,7 +50,7 @@ class Storage
       when DBClassAttribute
         cls = classesById[attr.parentId]?
         next if cls.nil?
-        nattr = StorageClassAttribute.new(cls, attr.id, attr.name, ValueType::String)
+        nattr = StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
         cls.addAttribute(nattr)
         attributesById[attr.id] = nattr        
       when DBInstanceAttribute
@@ -82,6 +85,11 @@ class Storage
     return @storageClasses[name]?
   end
 
+  # Get instance by id
+  def getInstanceById(id : Int64) : StorageInstance?
+    return @storageInstances[id]?
+  end
+
   # Creates class for storage and returns it
   def createClass(name : String, parent : StorageClass?) : StorageClass
     if !getClassByName(name).nil?
@@ -108,11 +116,11 @@ class Storage
     @storageInstances[ninstance.id] = ninstance
     @dataLogWriter.write(
       NewInstanceLog.new(
-        id: ninstance.id,
-        name: ninstance.name,
-        parentId: ninstance.parent.id
+        id: ninstance.id,        
+        parentId: parentClass.id
       )
     )
+    return ninstance
   end
 
   # Creates new class attribute
@@ -133,8 +141,9 @@ class Storage
   end
 
   # Create instance attribute
-  def createInstanceAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageInstanceAttribute
-    nattr = parent.createInstanceAttribute(name, valueType)
+  def createInstanceAttribute(parent : StorageClass, instanceId : Int64, name : String, valueType : ValueType) : StorageInstanceAttribute
+    Storage.attributeCounter += 1_i64
+    nattr = StorageInstanceAttribute.new(parent, Storage.attributeCounter, name, valueType)
   end
 
   # Set attribute value by id

@@ -1,4 +1,5 @@
 *.log
+*.db
 /docs/
 /lib/
 /bin/*
