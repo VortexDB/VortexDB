@@ -1,12 +1,9 @@
-require "./database/database"
-require "./data_logger/data_logger"
-require "./data_logger/data_log_dumper"
-require "./storage/storage"
-require "./command_processor"
-require "./console_server"
+require "./**"
 
-# Порт для обработки команда
+# Port for processing commands
 COMMAND_PORT = 26301
+# Port for data processing
+DATA_PORT = 26302
 
 database = Database.new
 logReader = DataLogReader.new
@@ -15,7 +12,19 @@ logDumper.dump
 
 dataLogWriter = DataLogWriter.new
 storage = Storage.new(database, dataLogWriter)
-
 commandProcessor = CommandProcessor.new(storage)
 consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
-consoleServer.start
+dataServer = DataServer.new(DATA_PORT, commandProcessor)
+
+spawn do 
+    consoleServer.start 
+end
+
+spawn do 
+    dataServer.start
+end
+
+# Wait forever
+loop do
+    sleep 10
+end
