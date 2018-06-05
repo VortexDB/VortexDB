@@ -1,4 +1,4 @@
-require "./**"
+require "./vortexdb/**"
 
 # Port for processing commands
 COMMAND_PORT = 26301
@@ -14,14 +14,14 @@ dataLogWriter = DataLogWriter.new
 storage = Storage.new(database, dataLogWriter)
 commandProcessor = CommandProcessor.new(storage)
 consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
-dataServer = DataServer.new(DATA_PORT, commandProcessor)
+erServer = ExternalRequestServer.new(DATA_PORT, commandProcessor)
 
 spawn do 
     consoleServer.start 
 end
 
 spawn do 
-    dataServer.start
+    erServer.start
 end
 
 # Wait forever
