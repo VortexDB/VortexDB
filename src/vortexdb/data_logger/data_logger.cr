@@ -42,7 +42,7 @@ class DataLogReader
 
         creator = LogContract.creators[name]?
         next if creator.nil?
-        dataLog = creator.call(file, IO::ByteFormat::SystemEndian)
+        dataLog = creator.call(file, IO::ByteFormat::SystemEndian).as(LogContract)
         yield dataLog
       end
     rescue e : IO::EOFError

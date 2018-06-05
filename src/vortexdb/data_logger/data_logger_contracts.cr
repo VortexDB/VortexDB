@@ -2,7 +2,7 @@ require "../common/*"
 
 # Base data log
 abstract class LogContract < MsgPackContract
-  register
+  
 end
 
 # New class

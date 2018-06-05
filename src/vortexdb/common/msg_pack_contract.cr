@@ -2,11 +2,10 @@ require "msgpack"
 
 # Base data log
 abstract class MsgPackContract
-  macro register
-        # Class creators
-      class_property creators = Hash(String, Proc(IO, IO::ByteFormat, {{ @type.id }})).new
-
-      # Write to IO
+    # Class creators
+    class_property creators = Hash(String, Proc(IO, IO::ByteFormat, MsgPackContract)).new
+    
+    # Write to IO
     def to_io(io, format)
         data = self.to_msgpack
         io.write_bytes(data.size.to_i64)
@@ -20,10 +19,24 @@ abstract class MsgPackContract
         io.read(buff)
         self.from_msgpack(buff)
     end
-  end
 
+    # Convert to bytes
+    def toBytes : Bytes
+        self.to_msgpack
+    end
+
+    # Create contract from bytes
+    def self.fromBytes(bytes : Bytes) : MsgPackContract
+        io = IO::Memory.new(bytes, false)
+        nameSize = io.read_bytes(Int32)
+        name = io.read_string(nameSize)
+
+        creator = MsgPackContract.creators[name]?
+        raise VortexException.new("Unknown contract") if creator.nil?
+        return creator.call(io, IO::ByteFormat::SystemEndian)
+    end
+  
   macro mapping(**props)
-
       NAME = {{ @type.name.stringify }}
 
       getter contract = NAME
@@ -35,6 +48,6 @@ abstract class MsgPackContract
       def initialize({{ props.keys.map { |x| ("@" + x.stringify).id }.stringify[1...-1].id }})
       end
 
-      LogContract.creators[NAME] = ->(io : IO, format : IO::ByteFormat) { self.from_io(io, format).as({{ @type.id }}) }
+      MsgPackContract.creators[NAME] = ->(io : IO, format : IO::ByteFormat) { self.from_io(io, format).as(MsgPackContract) }
   end
 end

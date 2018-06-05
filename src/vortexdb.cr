@@ -20,7 +20,7 @@ spawn do
     consoleServer.start 
 end
 
-spawn do 
+spawn do
     erServer.start
 end
 

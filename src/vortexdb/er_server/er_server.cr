@@ -22,21 +22,20 @@ class ExternalRequestServer
   getter commandProcessor : CommandProcessor
 
   # Process client
-  private def processMessage(client : ExternalRequestClient, data : Bytes) : Void
-    io = IO::Memory.new(data, false)
-    nameSize = io.read_bytes(Int32)
-    name = io.read_string(nameSize)
-
-    creator = ErContract.creators[name]?
-    return if creator.nil?
-    erContract = creator.call(io, IO::ByteFormat::SystemEndian)
-    
+  private def processMessage(client : ExternalRequestClient, data : Bytes) : Void    
+    erContract = MsgPackContract.fromBytes(data).as(ErContract)
+    p erContract
     processContract(client, erContract)
   end
 
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
-    
+    case contract
+    when NewClassErContract
+      @commandProcessor.createClass(contract.name, contract.parentName)
+    else
+      
+    end
   end
 
   def initialize(@port, @commandProcessor)
@@ -44,11 +43,12 @@ class ExternalRequestServer
 
   # Start server
   def start : Void
-    ws "/kingdom" do |socket|
+    ws WS_PATH do |socket|
       spawn do
         begin
           client = ExternalRequestClient.new(socket)
           socket.on_binary do |data|
+            puts data.hexstring
             processMessage(client, data)
           end          
         rescue e : Exception

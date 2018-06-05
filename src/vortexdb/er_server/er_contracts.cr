@@ -1,19 +1,21 @@
 # Extended contract
 abstract class ErContract < MsgPackContract
-    registers
 end
 
 # New class
 class NewClassErContract < ErContract
-    
+  mapping(
+    name: String,
+    parentName: String?
+  )
 end
 
 # New instance
-class NewClassErContract < ErContract    
+class NewClassErContract < ErContract
 end
 
 # New attribute
-class NewAttributeErContract < ErContract    
+class NewAttributeErContract < ErContract
 end
 
 # Set value

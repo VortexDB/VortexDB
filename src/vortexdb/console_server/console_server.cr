@@ -1,7 +1,5 @@
 require "benchmark"
 require "socket"
-require "./vortex_exeption"
-require "./command_processor"
 
 # Клиент консоли
 class CommandClient

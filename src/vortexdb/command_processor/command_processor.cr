@@ -1,6 +1,4 @@
-require "./storage/storage"
-
-# Обрабатывает команды
+# Process commands
 class CommandProcessor
     # Storage for entities
     getter storage : Storage
@@ -12,7 +10,7 @@ class CommandProcessor
     def createClass(name : String, parentName : String?) : StorageClass
         parent = @storage.getClassByName(parentName) if !parentName.nil?
         return @storage.createClass(name, parent)
-    end
+    end    
 
     # Create new instance
     def createInstance(parentName : String) : StorageInstance

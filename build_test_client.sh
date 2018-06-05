@@ -1,0 +1,1 @@
+crystal build --progress -o ./bin/testclient ./tests/test_client.cr
