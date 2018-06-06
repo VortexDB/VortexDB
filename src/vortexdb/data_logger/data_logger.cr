@@ -18,8 +18,6 @@ class DataLogWriter
   # Write data to log
   def write(dataLog : LogContract) : Void
     p dataLog
-    @file.write_bytes(dataLog.contract.size.to_i32)
-    @file << dataLog.contract
     @file.write_bytes(dataLog)
     @file.flush
   end

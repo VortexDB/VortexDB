@@ -12,6 +12,11 @@ class CommonClient
 
   def initialize(host : String, port : Int32)
     @socket = HTTP::WebSocket.new(host, ExternalRequestServer::WS_PATH, port)
+    @socket.on_binary do |data|
+      p data
+      contract = MsgPackContract.fromBytes(data).as(ErContract)
+      p contract
+    end
   end
 
   # Create class

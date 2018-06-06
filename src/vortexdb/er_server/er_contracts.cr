@@ -2,6 +2,14 @@
 abstract class ErContract < MsgPackContract
 end
 
+# Common response with result code
+class CommonErContract < ErContract
+  mapping(
+    code: Int32,
+    text: String
+  )
+end
+
 # New class
 class NewClassErContract < ErContract
   mapping(

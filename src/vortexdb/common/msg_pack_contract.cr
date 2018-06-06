@@ -8,12 +8,23 @@ abstract class MsgPackContract
     # Write to IO
     def to_io(io, format)
         data = self.to_msgpack
+        io.write_bytes(self.contract.size.to_i32)
+        io << self.contract
         io.write_bytes(data.size.to_i64)
         io.write(data)
     end
 
     # Read from IO
     def self.from_io(io, format)
+        nameSize = io.read_bytes(Int32)
+        name = io.read_string(nameSize)
+        creator = MsgPackContract.creators[name]?     
+        raise VortexException.new("Unknown contract") if creator.nil?
+        return creator.call(io, IO::ByteFormat::SystemEndian)
+    end
+
+    # Read body from io
+    def self.bodyFromIo(io, format)
         dataSize = io.read_bytes(Int64)
         buff = Bytes.new(dataSize)
         io.read(buff)
@@ -21,19 +32,16 @@ abstract class MsgPackContract
     end
 
     # Convert to bytes
-    def toBytes : Bytes
-        self.to_msgpack
+    def toBytes : Bytes        
+        io = IO::Memory.new
+        self.to_io(io, IO::ByteFormat::LittleEndian)
+        return io.to_slice
     end
 
     # Create contract from bytes
     def self.fromBytes(bytes : Bytes) : MsgPackContract
         io = IO::Memory.new(bytes, false)
-        nameSize = io.read_bytes(Int32)
-        name = io.read_string(nameSize)
-
-        creator = MsgPackContract.creators[name]?
-        raise VortexException.new("Unknown contract") if creator.nil?
-        return creator.call(io, IO::ByteFormat::SystemEndian)
+        return self.from_io(io, IO::ByteFormat::SystemEndian)
     end
   
   macro mapping(**props)
@@ -48,6 +56,6 @@ abstract class MsgPackContract
       def initialize({{ props.keys.map { |x| ("@" + x.stringify).id }.stringify[1...-1].id }})
       end
 
-      MsgPackContract.creators[NAME] = ->(io : IO, format : IO::ByteFormat) { self.from_io(io, format).as(MsgPackContract) }
+      MsgPackContract.creators[NAME] = ->(io : IO, format : IO::ByteFormat) { self.bodyFromIo(io, format).as(MsgPackContract) }
   end
 end
