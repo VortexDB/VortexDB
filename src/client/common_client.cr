@@ -3,19 +3,40 @@ require "../vortexdb/**"
 # Common client with base functions
 class CommonClient
   # Socket to connect
-  @socket : HTTP::WebSocket
+  @socket : HTTP::WebSocket?
+
+  # Server host
+  @host : String
+
+  # Server port
+  @port : Int32
+  
+  private def socket!
+    @socket.not_nil!
+  end
 
   # Send contract
   private def sendContract(contract : ErContract) : Void
-    @socket.send(contract.toBytes)
+    socket!.send(contract.toBytes)
   end
 
-  def initialize(host : String, port : Int32)
+  def initialize(@host : String, @port : Int32)
+  end
+
+  # Open client
+  def open : Void
     @socket = HTTP::WebSocket.new(host, ExternalRequestServer::WS_PATH, port)
+
     @socket.on_binary do |data|
-      p data
       contract = MsgPackContract.fromBytes(data).as(ErContract)
-      p contract
+    end
+
+    @socket.on_close do
+      puts "CLOSED"
+    end
+
+    spawn do
+      @socket.run
     end
   end
 

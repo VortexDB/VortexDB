@@ -38,23 +38,42 @@ class ExternalRequestServer
         code: 0,
         text: ""
       )
-      client.socket.send(contract.toBytes)
+      dat = contract.toBytes
+      client.socket.send(dat)
+      p "SENDED"
     else
     end
   end
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
-    begin
-      puts "1"
+    begin      
       contract = CommonErContract.new(
         code: 1,
         text: e.message || ""
       )
       client.socket.send(contract.toBytes)
-      puts "2"
     rescue
       puts "Send error"
+    end
+  end
+
+  # Process accepted socket
+  private def processSocket(socket : HTTP::WebSocket) : Void
+    client = ExternalRequestClient.new(socket)
+    socket.on_binary do |data|
+      begin
+        bench = Benchmark.realtime do
+          processMessage(client, data)
+        end
+        puts bench
+      rescue e : Exception
+        processException(client, e)
+      end
+    end
+
+    socket.on_close do
+      puts "CLOSED"
     end
   end
 
@@ -64,18 +83,10 @@ class ExternalRequestServer
   # Start server
   def start : Void
     ws WS_PATH do |socket|
-      spawn do
-        client = ExternalRequestClient.new(socket)
-        socket.on_binary do |data|
-          begin
-            bench = Benchmark.realtime do
-              processMessage(client, data)
-            end
-            puts bench
-          rescue e : Exception
-            processException(client, e)
-          end
-        end
+      begin
+        processSocket(socket)
+      rescue
+        puts "DISCONNECT"
       end
     end
     Kemal.run port
