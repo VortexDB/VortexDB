@@ -7,9 +7,9 @@ class CVClass
   getter name : String
 
   # Parent class
-  getter parent : CVClass?
+  getter parentName : String?
 
-  def initialize(@id, @name, @parent = nil)
+  def initialize(@id, @name, @parentName)
   end
 end
 
@@ -19,8 +19,8 @@ class CVInstance
   getter id : Int64
 
   # Parent class
-  getter parent : CVClass
+  getter parentName : String
 
-  def initialize(@id, @parent)
+  def initialize(@id, @parentName)
   end
 end

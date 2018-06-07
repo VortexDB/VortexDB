@@ -1,5 +1,8 @@
 require "../vortexdb/**"
 
+alias Completers = Completer(CVClass) |
+                   Completer(CVInstance)
+
 # Common client with base functions
 class CommonClient
   # Socket to connect
@@ -10,7 +13,10 @@ class CommonClient
 
   # Server port
   @port : Int32
-  
+
+  # Completers
+  @completers = Array(Completers).new
+
   private def socket!
     @socket.not_nil!
   end
@@ -25,28 +31,65 @@ class CommonClient
 
   # Open client
   def open : Void
-    @socket = HTTP::WebSocket.new(host, ExternalRequestServer::WS_PATH, port)
+    socket = HTTP::WebSocket.new(@host, ExternalRequestServer::WS_PATH, @port)
+    @socket = socket
 
-    @socket.on_binary do |data|
+    socket.on_binary do |data|
       contract = MsgPackContract.fromBytes(data).as(ErContract)
+      case contract
+      when NewClassErResponse
+        completer = @completers.pop.as(Completer(CVClass))
+        completer.complete(
+          CVClass.new(
+            id: contract.id,
+            name: contract.name,
+            parentName: contract.parentName
+          )
+        )
+      when NewInstanceErResponse
+        completer = @completers.pop.as(Completer(CVInstance))
+        completer.complete(
+          CVInstance.new(
+            id: contract.id,
+            parentName: contract.parentName
+          )
+        )
+      else
+      end
     end
 
-    @socket.on_close do
+    socket.on_close do
       puts "CLOSED"
     end
 
     spawn do
-      @socket.run
+      socket.run
     end
   end
 
   # Create class
-  def createClass(name : String, parent : CVClass? = nil) : CVClass
+  def createClass(name : String, parentName : String? = nil) : Future(CVClass)
+    completer = Completer(CVClass).new
+
     sendContract(
-      NewClassErContract.new(
+      NewClassErRequest.new(
         name: name,
-        parentName: parent.try &.name
+        parentName: parentName
       ))
-    return CVClass.new(3_i64, "Good")
+
+    @completers.push(completer)
+    return completer.future
+  end
+
+  # Create instance
+  def createInstance(parentName : String) : Future(CVInstance)
+    completer = Completer(CVInstance).new
+    sendContract(
+      NewInstanceErRequest.new(
+        parentName: parentName
+      ))
+
+    @completers.push(completer)
+    return completer.future
   end
 end

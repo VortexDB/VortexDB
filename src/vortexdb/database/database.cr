@@ -62,6 +62,8 @@ class Database
     case data
     when DBClass
       @database.exec("INSERT INTO t_classes VALUES(?,?,?)", data.id, data.name, data.parentId || -1)
+    when DBInstance
+      @database.exec("INSERT INTO t_instances VALUES(?,?)", data.id, data.parentId)
     when DBClassAttribute
       @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,1)", data.id, data.name, data.parentId, data.valueType)
     when DBAttributeValue

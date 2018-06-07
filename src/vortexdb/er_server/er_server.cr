@@ -25,29 +25,39 @@ class ExternalRequestServer
   # Process client
   private def processMessage(client : ExternalRequestClient, data : Bytes) : Void
     contract = MsgPackContract.fromBytes(data).as(ErContract)
-    p contract
     processContract(client, contract)
+  end
+
+  # Send response
+  private def sendResponse(client : ExternalRequestClient, response)
+    dat = response.toBytes
+    client.socket.send(dat)
   end
 
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
     case contract
-    when NewClassErContract
-      @commandProcessor.createClass(contract.name, contract.parentName)
-      contract = CommonErContract.new(
-        code: 0,
-        text: ""
-      )
-      dat = contract.toBytes
-      client.socket.send(dat)
-      p "SENDED"
+    when NewClassErRequest
+      cls = @commandProcessor.createClass(contract.name, contract.parentName)
+      sendResponse(client, NewClassErResponse.new(
+        id: cls.id,
+        name: cls.name,
+        parentName: cls.parentClass.try &.name
+      ))
+    when NewInstanceErRequest
+      inst = @commandProcessor.createInstance(contract.parentName)
+      sendResponse(client, NewInstanceErResponse.new(
+        id: inst.id,
+        parentName: inst.parentClass.name
+      ))
     else
     end
   end
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
-    begin      
+    begin
+      p e
       contract = CommonErContract.new(
         code: 1,
         text: e.message || ""

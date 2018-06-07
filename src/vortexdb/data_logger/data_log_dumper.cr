@@ -23,6 +23,11 @@ class DataLogDumper
                     name: item.name,
                     parentId: item.parentId
                 ))
+            when NewInstanceLog
+                @database.write(DBInstance.new(
+                    id: item.id,                    
+                    parentId: item.parentId
+                ))
             when NewClassAttributeLog
                 @database.write(DBClassAttribute.new(
                     id: item.id,

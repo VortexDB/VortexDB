@@ -25,6 +25,14 @@ class DBClass < DatabaseContract
     )
 end
 
+# Database instance
+class DBInstance < DatabaseContract
+    mapping(
+        id: Int64,
+        parentId: Int64
+    )
+end
+
 # Base attribute
 abstract class DBAttribute < DatabaseContract   
     # Returns id of attribute 

@@ -35,13 +35,8 @@ class DataLogReader
 
     begin
       loop do
-        nameSize = file.read_bytes(Int32)
-        name = file.read_string(nameSize)
-
-        creator = LogContract.creators[name]?
-        next if creator.nil?
-        dataLog = creator.call(file, IO::ByteFormat::SystemEndian).as(LogContract)
-        yield dataLog
+        contract = MsgPackContract.from_io(file, IO::ByteFormat::SystemEndian).as(LogContract)
+        yield contract
       end
     rescue e : IO::EOFError
       # Ignore

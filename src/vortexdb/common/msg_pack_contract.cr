@@ -5,6 +5,8 @@ abstract class MsgPackContract
     # Class creators
     class_property creators = Hash(String, Proc(IO, IO::ByteFormat, MsgPackContract)).new
     
+    abstract def to_msgpack : Bytes
+
     # Write to IO
     def to_io(io, format)
         data = self.to_msgpack
@@ -32,7 +34,7 @@ abstract class MsgPackContract
     end
 
     # Convert to bytes
-    def toBytes : Bytes        
+    def toBytes : Bytes
         io = IO::Memory.new
         self.to_io(io, IO::ByteFormat::LittleEndian)
         return io.to_slice

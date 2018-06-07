@@ -1,5 +1,6 @@
 # Extended contract
 abstract class ErContract < MsgPackContract
+  
 end
 
 # Common response with result code
@@ -10,16 +11,36 @@ class CommonErContract < ErContract
   )
 end
 
-# New class
-class NewClassErContract < ErContract
+# New class request
+class NewClassErRequest < ErContract
   mapping(
     name: String,
     parentName: String?
   )
 end
 
-# New instance
-class NewClassErContract < ErContract
+# New class response
+class NewClassErResponse < ErContract
+  mapping(
+    id: Int64,
+    name: String,
+    parentName: String?
+  )
+end
+
+# New instance request
+class NewInstanceErRequest < ErContract
+  mapping(
+    parentName: String
+  )
+end
+
+# New instance response
+class NewInstanceErResponse < ErContract
+  mapping(
+    id: Int64,
+    parentName: String
+  )
 end
 
 # New attribute
