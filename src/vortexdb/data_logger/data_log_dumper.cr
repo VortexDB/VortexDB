@@ -28,12 +28,13 @@ class DataLogDumper
                     id: item.id,                    
                     parentId: item.parentId
                 ))
-            when NewClassAttributeLog
-                @database.write(DBClassAttribute.new(
+            when NewAttributeLog
+                @database.write(DBAttribute.new(
                     id: item.id,
                     name: item.name,
                     parentId: item.parentId,
-                    valueType: item.valueType
+                    valueType: item.valueType,
+                    isClass: item.isClass
                 ))
             when SetAttributeValueLog
                 @database.write(DBAttributeValue.new(

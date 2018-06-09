@@ -1,28 +1,24 @@
+# Codes for response
+module ResponseCodes
+  OK = 0  
+  INTERNAL_ERROR = 255
+end
+
 # Extended contract
 abstract class ErContract < MsgPackContract
-  
 end
 
 # Common response with result code
-class CommonErContract < ErContract
+class CommonErResponse < ErContract  
   mapping(
     code: Int32,
-    text: String
+    text: String?
   )
 end
 
 # New class request
 class NewClassErRequest < ErContract
   mapping(
-    name: String,
-    parentName: String?
-  )
-end
-
-# New class response
-class NewClassErResponse < ErContract
-  mapping(
-    id: Int64,
     name: String,
     parentName: String?
   )
@@ -35,18 +31,38 @@ class NewInstanceErRequest < ErContract
   )
 end
 
-# New instance response
-class NewInstanceErResponse < ErContract
+# New attribute request
+class NewAttributeErRequest < ErContract
   mapping(
-    id: Int64,
-    parentName: String
+    name: String,
+    parentName: String,    
+    valueType: String,
+    isClass: Bool
   )
 end
 
-# New attribute
-class NewAttributeErContract < ErContract
+# Set attribute value
+class SetAttributeValueErRequest < ErContract
+  mapping(
+    name: String,
+    parentName: String,
+    value: String,
+    isClass: Bool
+  )
 end
 
-# Set value
-class SetValueErContract < ErContract
+# Get attribute value request
+class GetAttributeValueErRequest < ErContract
+  mapping(
+    name: String,
+    parentName: String,
+    isClass: Bool
+  )
+end
+
+# Get attribute value request
+class GetAttributeValueErResponse < ErContract
+  mapping(
+    value: String
+  )
 end

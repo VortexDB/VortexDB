@@ -43,7 +43,7 @@ class StorageClass < StorageEntity
     end
 
     # Add atribute
-    def addAttribute(attribute : StorageAttribute) : StorageClassAttribute
+    def addAttribute(attribute : StorageAttribute) : StorageAttribute
         if hasAttribute(attribute.name)
             raise VortexException.new("Attribute already exists")
         end
@@ -55,12 +55,18 @@ class StorageClass < StorageEntity
             @instanceAttributes[attribute.name] = attribute
         else
             raise VortexException.new("Unknown attribute type")
-        end        
+        end
     end   
 
     # Return class attribute
-    def getClassAttribute(name) : StorageClassAttribute?
-        return @classAttributes[name]?
+    def getAttribute(name : String, isClass : Bool) : StorageAttribute?        
+        attr = if isClass
+            @classAttributes[name]?
+        else
+            @instanceAttributes[name]?
+        end
+
+        return attr
     end
 end
 
@@ -82,28 +88,25 @@ class StorageAttribute < StorageEntity
     # Value type
     getter valueType : ValueType
 
-    def initialize(id, @name, @valueType)
+    # Parent class
+    getter parentClass : StorageClass
+
+    def initialize(id, @parentClass, @name, @valueType)
         super(id)
     end
 end
 
 # Class attribute
 class StorageClassAttribute < StorageAttribute
-    # Parent class
-    getter parentClass : StorageClass
-
-    def initialize(@parentClass, id, name, valueType)
-        super(id, name, valueType)
+    def initialize(parentClass, id, name, valueType)
+        super(id, parentClass, name, valueType)
     end
 end
 
 # Instance attribute
-class StorageInstanceAttribute < StorageAttribute
-    # Parent class
-    getter parentClass : StorageClass
-
-    def initialize(@parentClass, id, name, valueType)
-        super(id, name, valueType)
+class StorageInstanceAttribute < StorageAttribute    
+    def initialize(parentClass, id, name, valueType)
+        super(id, parentClass, name, valueType)
     end
 end
 

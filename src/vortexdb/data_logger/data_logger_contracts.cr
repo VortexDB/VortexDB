@@ -2,7 +2,6 @@ require "../common/*"
 
 # Base data log
 abstract class LogContract < MsgPackContract
-  
 end
 
 # New class
@@ -22,23 +21,14 @@ class NewInstanceLog < LogContract
   )
 end
 
-# New class attribute
-class NewClassAttributeLog < LogContract
+# New attribute log
+class NewAttributeLog < LogContract
   mapping(
     id: Int64,
     parentId: Int64,
     name: String,
-    valueType: String    
-  )
-end
-
-# New class attribute
-class NewInstanceAttributeLog < LogContract
-  mapping(
-    id: Int64,
-    name: String,
-    parentId: Int64,
-    valueType: String
+    valueType: String,
+    isClass: Bool
   )
 end
 

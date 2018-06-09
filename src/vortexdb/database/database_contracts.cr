@@ -33,32 +33,14 @@ class DBInstance < DatabaseContract
     )
 end
 
-# Base attribute
-abstract class DBAttribute < DatabaseContract   
-    # Returns id of attribute 
-    abstract def id : Int64
-
-    # Returns name of attribute 
-    abstract def name : String
-end
-
-# Database class attribute
-class DBClassAttribute < DBAttribute
+# Database attribute
+class DBAttribute < DatabaseContract   
     mapping(
         id: Int64,
         name: String,
         parentId: Int64,
-        valueType: String
-    )
-end
-
-# Database instance attribute
-class DBInstanceAttribute < DBAttribute
-    mapping(
-        id: Int64,
-        name: String,
-        parentId: Int64,
-        valueType: String
+        valueType: String,
+        isClass: Bool
     )
 end
 

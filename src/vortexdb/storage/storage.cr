@@ -47,13 +47,17 @@ class Storage
     @database.allAttributes do |attr|
       attrMaxId = attr.id if classMaxId < attr.id
       case attr
-      when DBClassAttribute
+      when DBAttribute
         cls = classesById[attr.parentId]?
         next if cls.nil?
-        nattr = StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+        nattr = if attr.isClass
+          StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+        else
+          StorageInstanceAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+        end
+                
         cls.addAttribute(nattr)
-        attributesById[attr.id] = nattr        
-      when DBInstanceAttribute
+        attributesById[attr.id] = nattr
       else
         raise VortexException.new("Unknown attribute type")
       end
@@ -124,26 +128,26 @@ class Storage
   end
 
   # Creates new class attribute
-  def createClassAttribute(parent : StorageClass, name : String, valueType : ValueType) : StorageClassAttribute
-    Storage.attributeCounter += 1_i64
-    nattr = StorageClassAttribute.new(parent, Storage.attributeCounter, name, valueType)
+  def createAttribute(parent : StorageClass, name : String, valueType : ValueType, isClass : Bool) : StorageAttribute
+    Storage.attributeCounter += 1_i64    
+    nattr = if isClass
+      StorageClassAttribute.new(parent, Storage.attributeCounter, name, valueType)
+    else
+      StorageInstanceAttribute.new(parent, Storage.attributeCounter, name, valueType)
+    end
+    
     parent.addAttribute(nattr)
 
     @dataLogWriter.write(
-      NewClassAttributeLog.new(
+      NewAttributeLog.new(
         id: nattr.id,
         parentId: nattr.parentClass.id,
         name: nattr.name,
-        valueType: nattr.valueType.to_s
+        valueType: nattr.valueType.to_s,
+        isClass: isClass
       )
     )
     return nattr
-  end
-
-  # Create instance attribute
-  def createInstanceAttribute(parent : StorageClass, instanceId : Int64, name : String, valueType : ValueType) : StorageInstanceAttribute
-    Storage.attributeCounter += 1_i64
-    nattr = StorageInstanceAttribute.new(parent, Storage.attributeCounter, name, valueType)
   end
 
   # Set attribute value by id

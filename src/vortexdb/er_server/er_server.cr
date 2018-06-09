@@ -22,47 +22,97 @@ class ExternalRequestServer
   # Command processor
   getter commandProcessor : CommandProcessor
 
+  # Send response
+  private def sendResponse(client : ExternalRequestClient, response) : Void
+    dat = response.toBytes
+    client.socket.send(dat)
+  end
+
+  # Send ok response
+  private def sendOkResponse(client : ExternalRequestClient) : Void
+    sendResponse(client, CommonErResponse.new(
+      code: ResponseCodes::OK,
+      text: nil
+    ))
+  end
+
+  # Send error response
+  private def sendErrorResponse(client : ExternalRequestClient, code : Int32, text : String? = nil) : Void
+    sendResponse(client, CommonErResponse.new(
+      code: code,
+      text: text
+    ))
+  end
+
   # Process client
   private def processMessage(client : ExternalRequestClient, data : Bytes) : Void
     contract = MsgPackContract.fromBytes(data).as(ErContract)
     processContract(client, contract)
   end
 
-  # Send response
-  private def sendResponse(client : ExternalRequestClient, response)
-    dat = response.toBytes
-    client.socket.send(dat)
-  end
-
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
     case contract
     when NewClassErRequest
-      cls = @commandProcessor.createClass(contract.name, contract.parentName)
-      sendResponse(client, NewClassErResponse.new(
-        id: cls.id,
-        name: cls.name,
-        parentName: cls.parentClass.try &.name
-      ))
+      processNewClass(client, contract)
     when NewInstanceErRequest
-      inst = @commandProcessor.createInstance(contract.parentName)
-      sendResponse(client, NewInstanceErResponse.new(
-        id: inst.id,
-        parentName: inst.parentClass.name
-      ))
+      processNewInstance(client, contract)
+    when NewAttributeErRequest
+      processNewAttribute(client, contract)      
+    when SetAttributeValueErRequest
+      processSetAttributeValue(client, contract)
+    when GetAttributeValueErRequest
+      processGetAttributeValue(client, contract)
     else
     end
   end
 
+  # Process new class request
+  private def processNewClass(client : ExternalRequestClient, contract : NewClassErRequest) : Void
+    cls = @commandProcessor.createClass(contract.name, contract.parentName)
+    sendOkResponse(client)
+  end
+
+  # Process new instance
+  private def processNewInstance(client : ExternalRequestClient, contract : NewInstanceErRequest) : Void
+    inst = @commandProcessor.createInstance(contract.parentName)
+    sendOkResponse(client)
+  end
+
+  # Process new attribute
+  private def processNewAttribute(client : ExternalRequestClient, contract : NewAttributeErRequest) : Void    
+    attr = @commandProcessor.createAttribute(contract.parentName, contract.name, contract.valueType, contract.isClass)    
+    sendOkResponse(client)
+  end
+
+  # Process set attribute value
+  private def processSetAttributeValue(client : ExternalRequestClient, contract : SetAttributeValueErRequest) : Void
+    @commandProcessor.setAttributeValueByName(
+        contract.parentName,
+        contract.name,
+        contract.value,
+        contract.isClass
+        )
+    sendOkResponse(client)
+  end
+
+  # Process get attribute value
+  private def processGetAttributeValue(client : ExternalRequestClient, contract : GetAttributeValueErRequest) : Void
+    # TODO: specialized exceptions
+    value = @commandProcessor.getAttributeValueByName(
+      contract.parentName,
+        contract.name,        
+        contract.isClass
+    ).not_nil!
+    sendResponse(client, GetAttributeValueErResponse.new(
+      value: value.to_s
+    ))
+  end
+
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
-    begin
-      p e
-      contract = CommonErContract.new(
-        code: 1,
-        text: e.message || ""
-      )
-      client.socket.send(contract.toBytes)
+    begin      
+      sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.to_s)
     rescue
       puts "Send error"
     end
