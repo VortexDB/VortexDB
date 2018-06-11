@@ -6,6 +6,18 @@ class CommandProcessor
   def initialize(@storage)
   end
 
+  # Iterate all classes
+  def iterateClasses(&block : StorageClass -> _) : Void
+    @storage.iterateClasses &block
+  end
+
+  # Iterate class instances by class name
+  def iterateClassInstances(name : String, &block : StorageInstance -> _) : Void
+    parent = @storage.getClassByName(name)
+    raise VortexException.new("Class does not exists") if parent.nil?
+    @storage.iterateClassInstances(parent, &block)
+  end
+
   # Creates new class
   def createClass(name : String, parentName : String?) : StorageClass
     parent = @storage.getClassByName(parentName) if !parentName.nil?

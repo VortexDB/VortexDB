@@ -59,6 +59,14 @@ class ConsoleServer
       # processGetValue(client, cmdList)
     when "del_instance"
       # processSetValue(client, cmdList)
+    when "lc" # List classes
+      processListClass(client, cmdList)
+    when "li" # List instances
+      processListInstance(client, cmdList)
+    when "lci"  # List class instances
+      processListClassInstance(client, cmdList)
+    when "generate"
+      processGenerate(client, cmdList)
     else
       raise VortexException.new("Unknown command")
     end
@@ -79,7 +87,7 @@ class ConsoleServer
   def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void    
     parentName = cmdList[1]
     ninst = @commandProcessor.createInstance(parentName)
-    p ninst
+    # p ninst
     client.sendLine("Instance created Id: #{ninst.id} ClassName: #{parentName}")
   end
 
@@ -120,6 +128,40 @@ class ConsoleServer
     else
       client.sendLine(attrWithValue.value)
     end
+  end
+
+  # List all classes
+  def processListClass(client : CommandClient, cmdList : Array(String)) : Void    
+    count = 0
+    @commandProcessor.iterateClasses do |x|
+      parentName = (x.parentClass.try &.name)
+      client.sendLine("#{x.id} #{x.name} #{parentName}")
+      count += 1
+    end
+    client.sendLine("Class count: #{count}")
+  end
+
+  # List all instances
+  def processListInstance(client : CommandClient, cmdList : Array(String)) : Void
+    
+  end
+
+  # List class instances
+  def processListClassInstance(client : CommandClient, cmdList : Array(String)) : Void
+    className = cmdList[1]
+    @commandProcessor.iterateClassInstances(className) do |x|
+      client.sendLine("#{className} #{x.id}")
+    end
+  end
+
+  # List all classes
+  def processListClassInstances(client : CommandClient, cmdList : Array(String)) : Void
+    
+  end
+
+  # Generate client contracts
+  def processGenerate(client : CommandClient, cmdList : Array(String)) : Void
+    
   end
 
   # Запускает сервер

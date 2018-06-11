@@ -17,7 +17,7 @@ class DataLogWriter
 
   # Write data to log
   def write(dataLog : LogContract) : Void
-    p dataLog
+    # p dataLog
     @file.write_bytes(dataLog)
     @file.flush
   end

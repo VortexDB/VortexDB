@@ -12,12 +12,12 @@ class Storage
 
   # Counter for attributes
   class_property attributeCounter : Int64 = 0_i64
-    
+
   # Classes
   @storageClasses : Hash(String, StorageClass)
 
-  # Instances
-  @storageInstances : Hash(Int64, StorageInstance)
+  # Instances. Class -> Hash(InstanceId, Instance)
+  @storageInstances : Hash(StorageClass, Hash(Int64, StorageInstance))
 
   # Values for attributes
   @attributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
@@ -34,7 +34,8 @@ class Storage
 
     classMaxId = 0
     @database.allClasses.each do |cls|
-      cls = StorageClass.new(cls.id, cls.name, nil)
+      parent = classesById[cls.parentId]?
+      cls = StorageClass.new(cls.id, cls.name, parent)
       @storageClasses[cls.name] = cls
       classesById[cls.id] = cls
       classMaxId = cls.id if classMaxId < cls.id
@@ -51,11 +52,11 @@ class Storage
         cls = classesById[attr.parentId]?
         next if cls.nil?
         nattr = if attr.isClass
-          StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
-        else
-          StorageInstanceAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
-        end
-                
+                  StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+                else
+                  StorageInstanceAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+                end
+
         cls.addAttribute(nattr)
         attributesById[attr.id] = nattr
       else
@@ -77,12 +78,29 @@ class Storage
 
   def initialize(@database, @dataLogWriter)
     @storageClasses = Hash(String, StorageClass).new
-    @storageInstances = Hash(Int64, StorageInstance).new
+    @storageInstances = Hash(StorageClass, Hash(Int64, StorageInstance)).new
     @attributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
 
     b = Benchmark.realtime { readEntities }
     puts "Read entities: #{b}"
   end
+
+  # Iterate all classes
+  def iterateClasses(&block : StorageClass -> _) : Void
+    @storageClasses.values.each do |x|
+      yield x
+    end
+  end
+
+  # Iterate class instances classes
+  def iterateClassInstances(parentClass : StorageClass, &block : StorageInstance -> _) : Void
+    instances = @storageInstances[parentClass]?
+    if instances
+      instances.values.each do |x|
+        yield x
+      end
+    end
+  end  
 
   # Returns class by name
   def getClassByName(name : String) : StorageClass?
@@ -90,8 +108,10 @@ class Storage
   end
 
   # Get instance by id
-  def getInstanceById(id : Int64) : StorageInstance?
-    return @storageInstances[id]?
+  def getInstanceById(parentClass : StorageClass, id : Int64) : StorageInstance?
+    instances = @storageInstances[parentClass]?
+    instance = instances.try &.[id]?
+    return instance
   end
 
   # Creates class for storage and returns it
@@ -117,10 +137,15 @@ class Storage
   def createInstance(parentClass : StorageClass) : StorageInstance
     Storage.instanceCounter += 1_i64
     ninstance = StorageInstance.new(Storage.instanceCounter, parentClass)
-    @storageInstances[ninstance.id] = ninstance
+    instances = @storageInstances[parentClass]? ||  Hash(Int64, StorageInstance).new
+    if instances.empty?
+      @storageInstances[parentClass] = instances
+    end
+
+    instances[ninstance.id] = ninstance
     @dataLogWriter.write(
       NewInstanceLog.new(
-        id: ninstance.id,        
+        id: ninstance.id,
         parentId: parentClass.id
       )
     )
@@ -129,13 +154,13 @@ class Storage
 
   # Creates new class attribute
   def createAttribute(parent : StorageClass, name : String, valueType : ValueType, isClass : Bool) : StorageAttribute
-    Storage.attributeCounter += 1_i64    
+    Storage.attributeCounter += 1_i64
     nattr = if isClass
-      StorageClassAttribute.new(parent, Storage.attributeCounter, name, valueType)
-    else
-      StorageInstanceAttribute.new(parent, Storage.attributeCounter, name, valueType)
-    end
-    
+              StorageClassAttribute.new(parent, Storage.attributeCounter, name, valueType)
+            else
+              StorageInstanceAttribute.new(parent, Storage.attributeCounter, name, valueType)
+            end
+
     parent.addAttribute(nattr)
 
     @dataLogWriter.write(
