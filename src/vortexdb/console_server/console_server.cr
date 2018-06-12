@@ -36,28 +36,29 @@ class ConsoleServer
   end
 
   # Process message
-  # TODO: method name
   def process(client : CommandClient, message : String) : Void
     cmdList = message.split(" ")
 
-    case cmdList[0]
-    when "new_class"
+    commandName = cmdList[0]
+
+    case commandName
+    when "nc" # new class
       processNewClass(client, cmdList)
-    when "new_inst"
+    when "ni" # new instance
       processNewInstance(client, cmdList)
-    when "new_clattr"
+    when "nca"  # new class attribute
       processNewClassAttribute(client, cmdList)
-    when "new_instattr"
+    when "nia"  # new instance attribute
       processNewInstanceAttribute(client, cmdList)
-    when "set_clattr_value"
+    when "scav"  # set class attribute value
       processSetClassAttributeValue(client, cmdList)
-    when "get_clattr_value"
+    when "gcav" # get class attribute value
       processGetClassAttributeValue(client, cmdList)
-    when "del_class"
+    when "dc"   # delete class
       # processDelete(client, cmdList)
-    when "del_clattr"
+    when "dca"  # delete class attribute
       # processGetValue(client, cmdList)
-    when "del_instance"
+    when "di"   # delete instance
       # processSetValue(client, cmdList)
     when "lc" # List classes
       processListClass(client, cmdList)
@@ -143,15 +144,26 @@ class ConsoleServer
 
   # List all instances
   def processListInstance(client : CommandClient, cmdList : Array(String)) : Void
-    
+    count = 0
+    @commandProcessor.iterateInstances do |x|
+      parentName = (x.parentClass.try &.name)
+      client.sendLine("#{parentName} #{x.id}")
+      count += 1
+    end
+    client.sendLine("Instance count: #{count}")
   end
 
   # List class instances
   def processListClassInstance(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[1]
+
+    count = 0
     @commandProcessor.iterateClassInstances(className) do |x|
       client.sendLine("#{className} #{x.id}")
+      count += 1
     end
+
+    client.sendLine("Instance count: #{count}")
   end
 
   # List all classes
@@ -161,7 +173,8 @@ class ConsoleServer
 
   # Generate client contracts
   def processGenerate(client : CommandClient, cmdList : Array(String)) : Void
-    
+    targetName = cmdList[1]
+    @commandProcessor.generateClient(targetName)
   end
 
   # Запускает сервер

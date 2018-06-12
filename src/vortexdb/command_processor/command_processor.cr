@@ -11,6 +11,11 @@ class CommandProcessor
     @storage.iterateClasses &block
   end
 
+  # Iterate all instances
+  def iterateInstances(&block : StorageInstance -> _) : Void
+    @storage.iterateInstances &block
+  end
+
   # Iterate class instances by class name
   def iterateClassInstances(name : String, &block : StorageInstance -> _) : Void
     parent = @storage.getClassByName(name)
@@ -57,5 +62,12 @@ class CommandProcessor
       raise VortexException.new("Attribute does not exists")
     end
     @storage.getAttributeValue(attr)
+  end
+
+  # Generate client code
+  def generateClient(targetName : String) : Void
+    targetType = TargetType.parse(targetName)
+    generator = ClientGenerator.new(targetType)
+    generator.generate(@storage)
   end
 end

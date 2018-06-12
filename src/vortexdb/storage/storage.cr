@@ -92,6 +92,15 @@ class Storage
     end
   end
 
+  # Iterate all instances
+  def iterateInstances(&block : StorageInstance -> _) : Void
+    @storageInstances.values.each do |x|
+      x.values.each do |instance|
+        yield instance
+      end
+    end
+  end
+
   # Iterate class instances classes
   def iterateClassInstances(parentClass : StorageClass, &block : StorageInstance -> _) : Void
     instances = @storageInstances[parentClass]?
