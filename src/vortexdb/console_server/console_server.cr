@@ -66,7 +66,7 @@ class ConsoleServer
       processListInstance(client, cmdList)
     when "lci"  # List class instances
       processListClassInstance(client, cmdList)
-    when "generate"
+    when "gen"  # Generate client
       processGenerate(client, cmdList)
     else
       raise VortexException.new("Unknown command")

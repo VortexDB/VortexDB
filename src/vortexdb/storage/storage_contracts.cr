@@ -27,6 +27,15 @@ class StorageClass < StorageEntity
     # Parent class
     getter parentClass : StorageClass?
 
+    # Return parent name
+    def parentName : String
+        if parent = @parentClass
+            parent.name
+        else
+            ""
+        end
+    end
+
     # Dictionary of class attributes
     @classAttributes = Hash(String, StorageClassAttribute).new
 
