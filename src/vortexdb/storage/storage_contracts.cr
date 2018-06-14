@@ -77,6 +77,13 @@ class StorageClass < StorageEntity
 
         return attr
     end
+
+    # Iterate all class attributes
+    def iterateClassAttribute(&block : StorageClassAttribute -> _) : Void
+        @classAttributes.each do |k, v|
+            yield v
+        end
+    end
 end
 
 # Instance entity

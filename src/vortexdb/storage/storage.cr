@@ -51,10 +51,11 @@ class Storage
       when DBAttribute
         cls = classesById[attr.parentId]?
         next if cls.nil?
+        valType = attr.valueType.toValueType
         nattr = if attr.isClass
-                  StorageClassAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+                  StorageClassAttribute.new(cls, attr.id, attr.name, valType)
                 else
-                  StorageInstanceAttribute.new(cls, attr.id, attr.name, attr.valueType.toValueType)
+                  StorageInstanceAttribute.new(cls, attr.id, attr.name, valType)
                 end
 
         cls.addAttribute(nattr)

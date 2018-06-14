@@ -15,16 +15,7 @@ end
 class String
     # Convert string to value type
     def toValueType : ValueType
-        case self
-        when "int"
-            return ValueType::Int
-        when "string"
-            return ValueType::String
-        when "double"
-            return ValueType::Double
-        else
-            raise VortexException.new("Unknown value type")
-        end
+        return ValueType.parse(self)
     end
 
     # Convert string to value
