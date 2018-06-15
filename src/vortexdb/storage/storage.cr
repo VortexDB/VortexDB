@@ -110,7 +110,7 @@ class Storage
         yield x
       end
     end
-  end  
+  end
 
   # Returns class by name
   def getClassByName(name : String) : StorageClass?
@@ -147,7 +147,7 @@ class Storage
   def createInstance(parentClass : StorageClass) : StorageInstance
     Storage.instanceCounter += 1_i64
     ninstance = StorageInstance.new(Storage.instanceCounter, parentClass)
-    instances = @storageInstances[parentClass]? ||  Hash(Int64, StorageInstance).new
+    instances = @storageInstances[parentClass]? || Hash(Int64, StorageInstance).new
     if instances.empty?
       @storageInstances[parentClass] = instances
     end

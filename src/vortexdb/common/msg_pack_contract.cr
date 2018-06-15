@@ -2,50 +2,50 @@ require "msgpack"
 
 # Base data log
 abstract class MsgPackContract
-    # Class creators
-    class_property creators = Hash(String, Proc(IO, IO::ByteFormat, MsgPackContract)).new
-    
-    abstract def to_msgpack : Bytes
+  # Class creators
+  class_property creators = Hash(String, Proc(IO, IO::ByteFormat, MsgPackContract)).new
 
-    # Write to IO
-    def to_io(io, format)
-        data = self.to_msgpack
-        io.write_bytes(self.contract.size.to_i32)
-        io << self.contract
-        io.write_bytes(data.size.to_i64)
-        io.write(data)
-    end
+  abstract def to_msgpack : Bytes
 
-    # Read from IO
-    def self.from_io(io, format)
-        nameSize = io.read_bytes(Int32)
-        name = io.read_string(nameSize)
-        creator = MsgPackContract.creators[name]?     
-        raise VortexException.new("Unknown contract") if creator.nil?
-        return creator.call(io, IO::ByteFormat::SystemEndian)
-    end
+  # Write to IO
+  def to_io(io, format)
+    data = self.to_msgpack
+    io.write_bytes(self.contract.size.to_i32)
+    io << self.contract
+    io.write_bytes(data.size.to_i64)
+    io.write(data)
+  end
 
-    # Read body from io
-    def self.bodyFromIo(io, format)
-        dataSize = io.read_bytes(Int64)
-        buff = Bytes.new(dataSize)
-        io.read(buff)
-        self.from_msgpack(buff)
-    end
+  # Read from IO
+  def self.from_io(io, format)
+    nameSize = io.read_bytes(Int32)
+    name = io.read_string(nameSize)
+    creator = MsgPackContract.creators[name]?
+    raise VortexException.new("Unknown contract") if creator.nil?
+    return creator.call(io, IO::ByteFormat::SystemEndian)
+  end
 
-    # Convert to bytes
-    def toBytes : Bytes
-        io = IO::Memory.new
-        self.to_io(io, IO::ByteFormat::LittleEndian)
-        return io.to_slice
-    end
+  # Read body from io
+  def self.bodyFromIo(io, format)
+    dataSize = io.read_bytes(Int64)
+    buff = Bytes.new(dataSize)
+    io.read(buff)
+    self.from_msgpack(buff)
+  end
 
-    # Create contract from bytes
-    def self.fromBytes(bytes : Bytes) : MsgPackContract
-        io = IO::Memory.new(bytes, false)
-        return self.from_io(io, IO::ByteFormat::SystemEndian)
-    end
-  
+  # Convert to bytes
+  def toBytes : Bytes
+    io = IO::Memory.new
+    self.to_io(io, IO::ByteFormat::LittleEndian)
+    return io.to_slice
+  end
+
+  # Create contract from bytes
+  def self.fromBytes(bytes : Bytes) : MsgPackContract
+    io = IO::Memory.new(bytes, false)
+    return self.from_io(io, IO::ByteFormat::SystemEndian)
+  end
+
   macro mapping(**props)
       NAME = {{ @type.name.stringify }}
 

@@ -58,7 +58,7 @@ class ExternalRequestServer
     when NewInstanceErRequest
       processNewInstance(client, contract)
     when NewAttributeErRequest
-      processNewAttribute(client, contract)      
+      processNewAttribute(client, contract)
     when SetAttributeValueErRequest
       processSetAttributeValue(client, contract)
     when GetAttributeValueErRequest
@@ -80,19 +80,19 @@ class ExternalRequestServer
   end
 
   # Process new attribute
-  private def processNewAttribute(client : ExternalRequestClient, contract : NewAttributeErRequest) : Void    
-    attr = @commandProcessor.createAttribute(contract.parentName, contract.name, contract.valueType, contract.isClass)    
+  private def processNewAttribute(client : ExternalRequestClient, contract : NewAttributeErRequest) : Void
+    attr = @commandProcessor.createAttribute(contract.parentName, contract.name, contract.valueType, contract.isClass)
     sendOkResponse(client)
   end
 
   # Process set attribute value
   private def processSetAttributeValue(client : ExternalRequestClient, contract : SetAttributeValueErRequest) : Void
     @commandProcessor.setAttributeValueByName(
-        contract.parentName,
-        contract.name,
-        contract.value,
-        contract.isClass
-        )
+      contract.parentName,
+      contract.name,
+      contract.value,
+      contract.isClass
+    )
     sendOkResponse(client)
   end
 
@@ -101,8 +101,8 @@ class ExternalRequestServer
     # TODO: specialized exceptions
     value = @commandProcessor.getAttributeValueByName(
       contract.parentName,
-        contract.name,        
-        contract.isClass
+      contract.name,
+      contract.isClass
     ).not_nil!
     sendResponse(client, GetAttributeValueErResponse.new(
       value: value.to_s
@@ -111,7 +111,7 @@ class ExternalRequestServer
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
-    begin      
+    begin
       sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.to_s)
     rescue
       puts "Send error"

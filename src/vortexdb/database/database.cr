@@ -65,12 +65,12 @@ class Database
     when DBInstance
       @database.exec("INSERT INTO t_instances VALUES(?,?)", data.id, data.parentId)
     when DBAttribute
-      @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,?)", 
-          data.id,
-          data.name,
-          data.parentId,
-          data.valueType,
-          data.isClass ? 1 : 0)
+      @database.exec("INSERT INTO t_attributes VALUES(?,?,?,?,?)",
+        data.id,
+        data.name,
+        data.parentId,
+        data.valueType,
+        data.isClass ? 1 : 0)
     when DBAttributeValue
       row = @database.query_one?("SELECT attributeId FROM t_values WHERE attributeId=?", data.attributeId, as: {Int64})
       if row.nil?
@@ -98,12 +98,12 @@ class Database
         valueType = rs.read(String)
         isClass = rs.read(Int32)
         yield DBAttribute.new(
-            id: id,
-            name: name,
-            parentId: parentId,
-            valueType: valueType,
-            isClass: isClass == 1
-          )        
+          id: id,
+          name: name,
+          parentId: parentId,
+          valueType: valueType,
+          isClass: isClass == 1
+        )
       end
     end
   end

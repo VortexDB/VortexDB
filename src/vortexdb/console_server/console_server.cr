@@ -46,27 +46,27 @@ class ConsoleServer
       processNewClass(client, cmdList)
     when "ni" # new instance
       processNewInstance(client, cmdList)
-    when "nca"  # new class attribute
+    when "nca" # new class attribute
       processNewClassAttribute(client, cmdList)
-    when "nia"  # new instance attribute
+    when "nia" # new instance attribute
       processNewInstanceAttribute(client, cmdList)
-    when "scav"  # set class attribute value
+    when "scav" # set class attribute value
       processSetClassAttributeValue(client, cmdList)
     when "gcav" # get class attribute value
       processGetClassAttributeValue(client, cmdList)
-    when "dc"   # delete class
+    when "dc" # delete class
       # processDelete(client, cmdList)
-    when "dca"  # delete class attribute
+    when "dca" # delete class attribute
       # processGetValue(client, cmdList)
-    when "di"   # delete instance
+    when "di" # delete instance
       # processSetValue(client, cmdList)
     when "lc" # List classes
       processListClass(client, cmdList)
     when "li" # List instances
       processListInstance(client, cmdList)
-    when "lci"  # List class instances
+    when "lci" # List class instances
       processListClassInstance(client, cmdList)
-    when "gen"  # Generate client
+    when "gen" # Generate client
       processGenerate(client, cmdList)
     else
       raise VortexException.new("Unknown command")
@@ -85,7 +85,7 @@ class ConsoleServer
   end
 
   # Process create new instance
-  def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void    
+  def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void
     parentName = cmdList[1]
     ninst = @commandProcessor.createInstance(parentName)
     # p ninst
@@ -132,7 +132,7 @@ class ConsoleServer
   end
 
   # List all classes
-  def processListClass(client : CommandClient, cmdList : Array(String)) : Void    
+  def processListClass(client : CommandClient, cmdList : Array(String)) : Void
     count = 0
     @commandProcessor.iterateClasses do |x|
       parentName = (x.parentClass.try &.name)
@@ -168,7 +168,6 @@ class ConsoleServer
 
   # List all classes
   def processListClassInstances(client : CommandClient, cmdList : Array(String)) : Void
-    
   end
 
   # Generate client contracts

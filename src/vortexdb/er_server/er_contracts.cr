@@ -1,6 +1,6 @@
 # Codes for response
 module ResponseCodes
-  OK = 0  
+  OK             =   0
   INTERNAL_ERROR = 255
 end
 
@@ -9,7 +9,7 @@ abstract class ErContract < MsgPackContract
 end
 
 # Common response with result code
-class CommonErResponse < ErContract  
+class CommonErResponse < ErContract
   mapping(
     code: Int32,
     text: String?
@@ -35,7 +35,7 @@ end
 class NewAttributeErRequest < ErContract
   mapping(
     name: String,
-    parentName: String,    
+    parentName: String,
     valueType: String,
     isClass: Bool
   )

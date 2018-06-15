@@ -16,15 +16,15 @@ commandProcessor = CommandProcessor.new(storage)
 consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
 erServer = ExternalRequestServer.new(DATA_PORT, commandProcessor)
 
-spawn do 
-    consoleServer.start 
+spawn do
+  consoleServer.start
 end
 
 spawn do
-    erServer.start
+  erServer.start
 end
 
 # Wait forever
 loop do
-    sleep 10
+  sleep 10
 end

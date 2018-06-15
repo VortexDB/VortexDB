@@ -24,12 +24,12 @@ class DataLogWriter
 end
 
 # Read log
-class DataLogReader  
-  def initialize    
+class DataLogReader
+  def initialize
   end
 
   # Read log by line
-  def readByLine(&block : LogContract -> _)    
+  def readByLine(&block : LogContract -> _)
     return unless File.exists?(DataLogConsts::LOG_FILE_NAME)
     file = File.open(DataLogConsts::LOG_FILE_NAME)
 
