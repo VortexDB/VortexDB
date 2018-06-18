@@ -2,7 +2,7 @@
 class CrystalClientGenerator < ClientGenerator
   GENERATED_FILE_NAME = "generated.cr"
 
-  # Generate class
+  # Generate class for client
   private def generateClass(cls : StorageClass) : String
     attrArr = String.build do |str|
       cls.iterateClassAttribute do |attr|
@@ -30,13 +30,57 @@ class CrystalClientGenerator < ClientGenerator
           end
         )
       end
+
+      str << %(
+        def instances : Iterator(ClientInstance)
+          @client.iterateInstances(#{cls.name}CC)
+        end
+      )
     end
 
     parStr = ""
-    parStr = " < #{cls.parentName}" if cls.parentClass
+    if parent = cls.parentClass
+      parStr = " < #{cls.parentName}"
+    else
+      parStr = " < ClientClass"
+    end    
 
     dataSrt = %(
-        class #{cls.name}#{parStr}
+        class #{cls.name}CC#{parStr}
+            #{attrArr}
+        end
+        )
+
+    return dataSrt
+  end
+
+  # Generate instance for client
+  def generateInstance(cls : StorageClass) : Void
+    attrArr = String.build do |str|
+      cls.iterateInstanceAttribute do |attr|
+        str << "@#{attr.name} : #{attr.valueType}?\n"
+        str << %(
+                  def #{attr.name} : #{attr.valueType}
+                      @client.getInstanceAttributeValue(@name, #{attr.name})
+                  end
+
+                  def #{attr.name}=(value : #{attr.valueType}) : Void
+                      @client.setInstanceAttributeValue(@name, #{attr.name}, value)
+                  end
+              )
+      end
+
+      str << %(
+          def initialize(client : CommonClient)
+            super(client)
+          end
+        )
+    end
+
+    parStr = "< ClientInstance"    
+
+    dataSrt = %(
+        class #{cls.name}CI#{parStr}
             #{attrArr}
         end
         )
@@ -48,8 +92,10 @@ class CrystalClientGenerator < ClientGenerator
   def generate(storage : Storage) : Void
     genStr = String.build do |str|
       storage.iterateClasses do |cls|
-        clsdata = generateClass(cls)
-        str << clsdata
+        clsData = generateClass(cls)
+        str << clsData
+        instData = generateInstance(cls)
+        str << instData
       end
     end
 
