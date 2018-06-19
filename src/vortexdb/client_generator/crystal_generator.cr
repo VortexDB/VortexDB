@@ -5,15 +5,19 @@ class CrystalClientGenerator < ClientGenerator
   # Generate class for client
   private def generateClass(cls : StorageClass) : String
     attrArr = String.build do |str|
+      clsName = "#{cls.name}Class"
+
+      str << %(CLASS_NAME = "#{clsName}"\n)
+
       cls.iterateClassAttribute do |attr|
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                     def #{attr.name} : #{attr.valueType}
-                        @client.getClassAttributeValue(@name, #{attr.name})
+                        @client.getClassAttributeValue(CLASS_NAME, @#{attr.name})
                     end
 
                     def #{attr.name}=(value : #{attr.valueType}) : Void
-                        @client.setClassAttributeValue(@name, #{attr.name}, value)
+                        @client.setClassAttributeValue(CLASS_NAME, @#{attr.name}, value)
                     end
                 )
       end
@@ -33,7 +37,7 @@ class CrystalClientGenerator < ClientGenerator
 
       str << %(
         def instances : Iterator(ClientInstance)
-          @client.iterateInstances(#{cls.name}CC)
+          @client.iterateInstances(#{cls.name}Class)
         end
       )
     end
@@ -46,7 +50,7 @@ class CrystalClientGenerator < ClientGenerator
     end    
 
     dataSrt = %(
-        class #{cls.name}CC#{parStr}
+        class #{cls.name}Class#{parStr}
             #{attrArr}
         end
         )
@@ -57,21 +61,29 @@ class CrystalClientGenerator < ClientGenerator
   # Generate instance for client
   def generateInstance(cls : StorageClass) : String    
     attrArr = String.build do |str|
+      clsName = "#{cls.name}Class"
+
+      str << %(CLASS_NAME = "#{clsName}"\n)
+      str << %(
+        getter parent : #{clsName}
+      )
+
       cls.iterateInstanceAttribute do |attr|
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                   def #{attr.name} : #{attr.valueType}
-                      @client.getInstanceAttributeValue(@name, #{attr.name})
+                      @client.getInstanceAttributeValue(CLASS_NAME, @#{attr.name})
                   end
 
                   def #{attr.name}=(value : #{attr.valueType}) : Void
-                      @client.setInstanceAttributeValue(@name, #{attr.name}, value)
+                      @client.setInstanceAttributeValue(CLASS_NAME, @#{attr.name}, value)
                   end
               )
-      end
+      end          
 
       str << %(
           def initialize(client : CommonClient)
+            @parent = #{clsName}.new(client)
             super(client)
           end
         )
@@ -80,7 +92,7 @@ class CrystalClientGenerator < ClientGenerator
     parStr = "< ClientInstance"    
 
     dataSrt = %(
-        class #{cls.name}CI#{parStr}
+        class #{cls.name}Instance#{parStr}
             #{attrArr}
         end
         )

@@ -109,6 +109,7 @@ class ConsoleServer
     name = cmdList[2]
     valueTypeStr = cmdList[3]
     nattr = @commandProcessor.createAttribute(className, name, valueTypeStr, false)
+    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
   end
 
   # Set class attribute value
@@ -174,6 +175,7 @@ class ConsoleServer
   def processGenerate(client : CommandClient, cmdList : Array(String)) : Void
     targetName = cmdList[1]
     @commandProcessor.generateClient(targetName)
+    client.sendLine("Ok")
   end
 
   # Запускает сервер

@@ -1,40 +1,62 @@
-class BaseCC < ClientClass
-  @name : String?
+class BaseClass < ClientClass
+  CLASS_NAME = "BaseClass"
+  @id : Int?
 
-  def name : String
-    @client.getClassAttributeValue(@name, name)
+  def id : Int
+    @client.getClassAttributeValue(CLASS_NAME, @id)
   end
 
-  def name=(value : String) : Void
-    @client.setClassAttributeValue(@name, name, value)
+  def id=(value : Int) : Void
+    @client.setClassAttributeValue(CLASS_NAME, @id, value)
   end
 
   def initialize(@client : CommonClient)
   end
 
   def instances : Iterator(ClientInstance)
-    @client.iterateInstances(BaseCC)
+    @client.iterateInstances(BaseClass)
   end
 end
 
-class BaseCI < ClientInstance
+class BaseInstance < ClientInstance
+  CLASS_NAME = "BaseClass"
+
+  getter parent : BaseClass
+
   def initialize(client : CommonClient)
+    @parent = BaseClass.new(client)
     super(client)
   end
 end
 
-class MeterCC < Base
+class MeterClass < Base
+  CLASS_NAME = "MeterClass"
+
   def initialize(client : CommonClient)
     super(client)
   end
 
   def instances : Iterator(ClientInstance)
-    @client.iterateInstances(MeterCC)
+    @client.iterateInstances(MeterClass)
   end
 end
 
-class MeterCI < ClientInstance
+class MeterInstance < ClientInstance
+  CLASS_NAME = "MeterClass"
+
+  getter parent : MeterClass
+  @serial : String?
+
+  def serial : String
+    @client.getInstanceAttributeValue(CLASS_NAME, @serial)
+  end
+
+  def serial=(value : String) : Void
+    @client.setInstanceAttributeValue(CLASS_NAME, @serial, value)
+  end
+
   def initialize(client : CommonClient)
+    @parent = MeterClass.new(client)
     super(client)
   end
 end

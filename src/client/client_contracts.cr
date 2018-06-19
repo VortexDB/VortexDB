@@ -1,26 +1,16 @@
-# Client vortex class
-class CVClass
-  # Class id
-  getter id : Int64
+require "./common_client"
 
-  # Class name
-  getter name : String
-
-  # Parent class
-  getter parentName : String?
-
-  def initialize(@id, @name, @parentName)
-  end
+# Client class
+class ClientClass
+  # Parent 
+  getter parent : ClientClass?
 end
 
-# Client vortex instance
-class CVInstance
-  # Instance id
-  getter id : Int64
+# Client class
+class ClientInstance
+  # Parent 
+  getter parent : ClientClass
 
-  # Parent class
-  getter parentName : String
-
-  def initialize(@id, @parentName)
+  def initialize(@client : CommonClient, @parent)
   end
 end
