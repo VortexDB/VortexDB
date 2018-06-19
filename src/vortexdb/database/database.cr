@@ -83,6 +83,20 @@ class Database
     end
   end
 
+  # Return instance count
+  def getInstanceCount : Int64
+    res = @database.scalar("SELECT count(*) FROM t_instances")
+    case res
+    when Int64
+      return res
+    when Float64
+      return res.to_i64
+    when String
+      return res.to_i64
+    end
+    return 0_i64
+  end
+
   # Return all classes
   def allClasses : Array(DBClass)
     @database.query_all("SELECT id, name, parentId FROM t_classes", as: DBClass)

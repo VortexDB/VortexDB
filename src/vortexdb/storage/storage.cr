@@ -42,11 +42,13 @@ class Storage
     end
     Storage.classCounter = classMaxId.to_i64
 
-    attributesById = Hash(Int64, StorageAttribute).new
+    instCount = @database.getInstanceCount
+    Storage.instanceCounter = instCount
 
+    attributesById = Hash(Int64, StorageAttribute).new
     attrMaxId = 0
     @database.allAttributes do |attr|
-      attrMaxId = attr.id if classMaxId < attr.id
+      attrMaxId = attr.id if attrMaxId < attr.id
       case attr
       when DBAttribute
         cls = classesById[attr.parentId]?

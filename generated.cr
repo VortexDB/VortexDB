@@ -17,6 +17,12 @@ class BaseCC < ClientClass
   end
 end
 
+class BaseCI < ClientInstance
+  def initialize(client : CommonClient)
+    super(client)
+  end
+end
+
 class MeterCC < Base
   def initialize(client : CommonClient)
     super(client)
@@ -24,5 +30,11 @@ class MeterCC < Base
 
   def instances : Iterator(ClientInstance)
     @client.iterateInstances(MeterCC)
+  end
+end
+
+class MeterCI < ClientInstance
+  def initialize(client : CommonClient)
+    super(client)
   end
 end

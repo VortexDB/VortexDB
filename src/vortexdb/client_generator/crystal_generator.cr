@@ -55,7 +55,7 @@ class CrystalClientGenerator < ClientGenerator
   end
 
   # Generate instance for client
-  def generateInstance(cls : StorageClass) : Void
+  def generateInstance(cls : StorageClass) : String    
     attrArr = String.build do |str|
       cls.iterateInstanceAttribute do |attr|
         str << "@#{attr.name} : #{attr.valueType}?\n"
@@ -76,7 +76,7 @@ class CrystalClientGenerator < ClientGenerator
           end
         )
     end
-
+    
     parStr = "< ClientInstance"    
 
     dataSrt = %(
@@ -84,7 +84,7 @@ class CrystalClientGenerator < ClientGenerator
             #{attrArr}
         end
         )
-
+        
     return dataSrt
   end
 
