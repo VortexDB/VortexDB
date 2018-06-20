@@ -47,7 +47,7 @@ class CrystalClientGenerator < ClientGenerator
       parStr = " < #{cls.parentName}"
     else
       parStr = " < ClientClass"
-    end    
+    end
 
     dataSrt = %(
         class #{cls.name}Class#{parStr}
@@ -59,7 +59,7 @@ class CrystalClientGenerator < ClientGenerator
   end
 
   # Generate instance for client
-  def generateInstance(cls : StorageClass) : String    
+  def generateInstance(cls : StorageClass) : String
     attrArr = String.build do |str|
       clsName = "#{cls.name}Class"
 
@@ -79,7 +79,7 @@ class CrystalClientGenerator < ClientGenerator
                       @client.setInstanceAttributeValue(CLASS_NAME, @#{attr.name}, value)
                   end
               )
-      end          
+      end
 
       str << %(
           def initialize(client : CommonClient)
@@ -88,27 +88,64 @@ class CrystalClientGenerator < ClientGenerator
           end
         )
     end
-    
-    parStr = "< ClientInstance"    
+
+    parStr = "< ClientInstance"
 
     dataSrt = %(
         class #{cls.name}Instance#{parStr}
             #{attrArr}
         end
         )
-        
+
     return dataSrt
+  end
+
+  # Generate vortex client
+  def generateVortexClient(storage : Storage) : String
+    attrStr = String.build do |str|
+      str << %(
+        getter host : String
+        getter port : Int32
+        getter commonClient : CommonClient
+
+        def initialize(@host : String, @port : Int32)          
+        end
+
+        def open : Void
+        end
+
+        def get(entityType) : ClientEntity
+          if entityType <= ClientEntity
+            return entityType.new(@commonClient)
+          end
+          raise Exception.new("Wrong type")
+        end
+      )      
+    end
+
+    dataStr = %(
+        class VortexClient
+          #{attrStr}
+        end
+      )
+
+    return dataStr
   end
 
   # Generate code
   def generate(storage : Storage) : Void
     genStr = String.build do |str|
+      str << %(require "common_client")
+
       storage.iterateClasses do |cls|
         clsData = generateClass(cls)
         str << clsData
         instData = generateInstance(cls)
         str << instData
       end
+
+      clientStr = generateVortexClient(storage)
+      str << clientStr
     end
 
     File.write(GENERATED_FILE_NAME, genStr)

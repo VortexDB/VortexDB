@@ -1,13 +1,15 @@
+require "common_client"
+
 class BaseClass < ClientClass
   CLASS_NAME = "BaseClass"
-  @id : Int?
+  @name : String?
 
-  def id : Int
-    @client.getClassAttributeValue(CLASS_NAME, @id)
+  def name : String
+    @client.getClassAttributeValue(CLASS_NAME, @name)
   end
 
-  def id=(value : Int) : Void
-    @client.setClassAttributeValue(CLASS_NAME, @id, value)
+  def name=(value : String) : Void
+    @client.setClassAttributeValue(CLASS_NAME, @name, value)
   end
 
   def initialize(@client : CommonClient)
@@ -58,5 +60,24 @@ class MeterInstance < ClientInstance
   def initialize(client : CommonClient)
     @parent = MeterClass.new(client)
     super(client)
+  end
+end
+
+class VortexClient
+  getter host : String
+  getter port : Int32
+  getter commonClient : CommonClient
+
+  def initialize(@host : String, @port : Int32)
+  end
+
+  def open : Void
+  end
+
+  def get(entityType) : ClientEntity
+    if entityType <= ClientEntity
+      return entityType.new(@commonClient)
+    end
+    raise Exception.new("Wrong type")
   end
 end

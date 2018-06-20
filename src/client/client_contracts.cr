@@ -1,5 +1,9 @@
 require "./common_client"
 
+# Base client entity
+abstract class ClientEntity  
+end
+
 # Client class
 class ClientClass
   # Parent 
