@@ -44,7 +44,7 @@ class CrystalClientGenerator < ClientGenerator
 
     parStr = ""
     if parent = cls.parentClass
-      parStr = " < #{cls.parentName}"
+      parStr = " < #{cls.parentName}Class"
     else
       parStr = " < ClientClass"
     end
