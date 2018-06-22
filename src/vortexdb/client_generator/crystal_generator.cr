@@ -135,7 +135,7 @@ class CrystalClientGenerator < ClientGenerator
   # Generate code
   def generate(storage : Storage) : Void
     genStr = String.build do |str|
-      str << %(require "common_client")
+      str << %(require "commonclient")
 
       storage.iterateClasses do |cls|
         clsData = generateClass(cls)
