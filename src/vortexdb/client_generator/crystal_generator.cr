@@ -22,15 +22,22 @@ class CrystalClientGenerator < ClientGenerator
                 )
       end
 
-      if cls.parentClass.nil?
+      parentClass = cls.parentClass
+
+      if parentClass
+        parentName = "#{parentClass.name}Class"
         str << %(
-          def initialize(@client : CommonClient)
+          getter parent#{parentClass.name} : #{parentName}
+        )
+
+        str << %(
+          def initialize(client : CommonClient)
+            super(client)
           end
         )
       else
         str << %(
-          def initialize(client : CommonClient)
-            super(client)
+          def initialize(@client : CommonClient)
           end
         )
       end
@@ -100,38 +107,6 @@ class CrystalClientGenerator < ClientGenerator
     return dataSrt
   end
 
-  # Generate vortex client
-  def generateVortexClient(storage : Storage) : String
-    attrStr = String.build do |str|
-      str << %(
-        getter host : String
-        getter port : Int32
-        getter commonClient : CommonClient
-
-        def initialize(@host : String, @port : Int32)          
-        end
-
-        def open : Void
-        end
-
-        def get(entityType) : ClientEntity
-          if entityType <= ClientEntity
-            return entityType.new(@commonClient)
-          end
-          raise Exception.new("Wrong type")
-        end
-      )      
-    end
-
-    dataStr = %(
-        class VortexClient
-          #{attrStr}
-        end
-      )
-
-    return dataStr
-  end
-
   # Generate code
   def generate(storage : Storage) : Void
     genStr = String.build do |str|
@@ -142,10 +117,7 @@ class CrystalClientGenerator < ClientGenerator
         str << clsData
         instData = generateInstance(cls)
         str << instData
-      end
-
-      clientStr = generateVortexClient(storage)
-      str << clientStr
+      end      
     end
 
     File.write(GENERATED_FILE_NAME, genStr)
