@@ -6,6 +6,7 @@ class CrystalClientGenerator < ClientGenerator
   private def generateClass(cls : StorageClass) : String
     attrArr = String.build do |str|
       clsName = "#{cls.name}Class"
+      instName = "#{cls.name}Instance"
 
       str << %(CLASS_NAME = "#{clsName}"\n)
 
@@ -13,11 +14,11 @@ class CrystalClientGenerator < ClientGenerator
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                     def #{attr.name} : #{attr.valueType}
-                        @client.getClassAttributeValue(CLASS_NAME, @#{attr.name})
+                        @client.getClassAttributeValue(self, @#{attr.name})
                     end
 
                     def #{attr.name}=(value : #{attr.valueType}) : Void
-                        @client.setClassAttributeValue(CLASS_NAME, @#{attr.name}, value)
+                        @client.setClassAttributeValue(self, @#{attr.name}, value)
                     end
                 )
       end
@@ -31,20 +32,21 @@ class CrystalClientGenerator < ClientGenerator
         )
 
         str << %(
-          def initialize(client : CommonClient)
+          def initialize(client : VortexClient)
+            @parent#{parentClass.name} = #{parentName}.new(client)
             super(client)
           end
         )
       else
         str << %(
-          def initialize(@client : CommonClient)
+          def initialize(@client : VortexClient)
           end
         )
       end
-
+      
       str << %(
-        def instances : Iterator(ClientInstance)
-          @client.iterateInstances(#{cls.name}Class)
+        def instances : Iterator(#{instName})
+          @client.iterateInstances(self)
         end
       )
     end
@@ -79,17 +81,17 @@ class CrystalClientGenerator < ClientGenerator
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                   def #{attr.name} : #{attr.valueType}
-                      @client.getInstanceAttributeValue(CLASS_NAME, @#{attr.name})
+                      @client.getInstanceAttributeValue(self, @#{attr.name})
                   end
 
                   def #{attr.name}=(value : #{attr.valueType}) : Void
-                      @client.setInstanceAttributeValue(CLASS_NAME, @#{attr.name}, value)
+                      @client.setInstanceAttributeValue(self, @#{attr.name}, value)
                   end
               )
       end
 
       str << %(
-          def initialize(client : CommonClient)
+          def initialize(client : VortexClient)
             @parent = #{clsName}.new(client)
             super(client)
           end
