@@ -72,6 +72,8 @@ class CrystalClientGenerator < ClientGenerator
     attrArr = String.build do |str|
       clsName = "#{cls.name}Class"
 
+      str << "@id : Int64"
+
       str << %(CLASS_NAME = "#{clsName}"\n)
       str << %(
         getter parent : #{clsName}
@@ -91,7 +93,7 @@ class CrystalClientGenerator < ClientGenerator
       end
 
       str << %(
-          def initialize(client : VortexClient)
+          def initialize(@id : Int64, client : VortexClient)
             @parent = #{clsName}.new(client)
             super(client)
           end
