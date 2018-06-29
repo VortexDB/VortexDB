@@ -14,11 +14,11 @@ class CrystalClientGenerator < ClientGenerator
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                     def #{attr.name} : #{attr.valueType}
-                        @client.getClassAttributeValue(self, @#{attr.name})
+                        @client.getClassAttributeValue(self, "#{attr.name}")
                     end
 
                     def #{attr.name}=(value : #{attr.valueType}) : Void
-                        @client.setClassAttributeValue(self, @#{attr.name}, value)
+                        @client.setClassAttributeValue(self, "#{attr.name}", value)
                     end
                 )
       end
@@ -45,8 +45,8 @@ class CrystalClientGenerator < ClientGenerator
       end
       
       str << %(
-        def instances : Iterator(#{instName})
-          @client.iterateInstances(self)
+        def instances(&block : #{instName} -> Void) : Void
+          @client.iterateInstances(self, #{instName}, &block)
         end
       )
     end
@@ -72,7 +72,7 @@ class CrystalClientGenerator < ClientGenerator
     attrArr = String.build do |str|
       clsName = "#{cls.name}Class"
 
-      str << "@id : Int64"
+      str << "@id : Int64\n"
 
       str << %(CLASS_NAME = "#{clsName}"\n)
       str << %(
@@ -83,11 +83,11 @@ class CrystalClientGenerator < ClientGenerator
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                   def #{attr.name} : #{attr.valueType}
-                      @client.getInstanceAttributeValue(self, @#{attr.name})
+                      @client.getInstanceAttributeValue(parent, "#{attr.name}")
                   end
 
                   def #{attr.name}=(value : #{attr.valueType}) : Void
-                      @client.setInstanceAttributeValue(self, @#{attr.name}, value)
+                      @client.setInstanceAttributeValue(parent, "#{attr.name}", value)
                   end
               )
       end
