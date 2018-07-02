@@ -1,4 +1,7 @@
 require "../common/*"
+require "vortexcommon"
+
+include VortexCommon
 
 # Base data log
 abstract class LogContract < MsgPackContract
