@@ -12,7 +12,11 @@ class CommandClient
 
   # Отправляет строку с переводом строки
   def sendLine(message)
-    @socket.send("#{message}\n")
+    begin
+      @socket.send("#{message}\n")
+    rescue
+      puts "Send error"
+    end
   end
 end
 
@@ -188,8 +192,11 @@ class ConsoleServer
       spawn do
         loop do
           begin
-            message = client.gets
-            next unless message
+            message = client.gets            
+            unless message
+              client.close
+              break
+            end
 
             puts message
             if message.starts_with?("exit")

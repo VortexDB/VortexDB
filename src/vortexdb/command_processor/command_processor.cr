@@ -56,10 +56,14 @@ class CommandProcessor
 
   # Get class value by attribute name
   def getAttributeValueByName(parentName : String, name : String, isClass : Bool) : StorageAttributeWithValue?
-    parent = @storage.getClassByName(parentName).not_nil!
+    parent = @storage.getClassByName(parentName)
+    if parent.nil?
+      raise VortexException.new("Class #{parentName} does not exists")
+    end
+
     attr = parent.getAttribute(name, isClass)
     if attr.nil?
-      raise VortexException.new("Attribute does not exists")
+      raise VortexException.new("Attribute #{name} does not exists")
     end
     @storage.getAttributeValue(attr)
   end

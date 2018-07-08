@@ -12,10 +12,7 @@ end
 
 # Main server for processing requests
 # Uses websockets for transport
-class ExternalRequestServer
-  # Path for websocket
-  WS_PATH = "/kingdom"
-
+class ExternalRequestServer  
   # Server port
   getter port : Int32
 
@@ -52,6 +49,7 @@ class ExternalRequestServer
 
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
+    p contract
     case contract
     when NewClassErRequest
       processNewClass(client, contract)
@@ -64,6 +62,7 @@ class ExternalRequestServer
     when GetAttributeValueErRequest
       processGetAttributeValue(client, contract)
     else
+      raise VortexException.new("Unknown contract")
     end
   end
 
@@ -98,21 +97,28 @@ class ExternalRequestServer
 
   # Process get attribute value
   private def processGetAttributeValue(client : ExternalRequestClient, contract : GetAttributeValueErRequest) : Void
-    # TODO: specialized exceptions
-    value = @commandProcessor.getAttributeValueByName(
+    attrValue = @commandProcessor.getAttributeValueByName(
       contract.parentName,
       contract.name,
       contract.isClass
-    ).not_nil!
+    )
+
+    respValue = attrValue ? attrValue.value.to_s : "nil"    
     sendResponse(client, GetAttributeValueErResponse.new(
-      value: value.to_s
+        value: respValue
     ))
   end
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
     begin
-      sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.to_s)
+      case e        
+      when VortexException
+        # TODO: Response exception
+        sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.message!)
+      else
+        sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.to_s)
+      end      
     rescue
       puts "Send error"
     end
@@ -142,7 +148,7 @@ class ExternalRequestServer
 
   # Start server
   def start : Void
-    ws WS_PATH do |socket|
+    ws VortexCommon::VORTEX_EXTERNAL_PATH do |socket|
       begin
         processSocket(socket)
       rescue

@@ -1,4 +1,3 @@
-require "../common/*"
 require "vortexcommon"
 
 include VortexCommon

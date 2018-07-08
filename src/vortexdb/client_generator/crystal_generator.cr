@@ -5,10 +5,14 @@ class CrystalClientGenerator < ClientGenerator
   # Generate class for client
   private def generateClass(cls : StorageClass) : String
     attrArr = String.build do |str|
-      clsName = "#{cls.name}Class"
       instName = "#{cls.name}Instance"
 
-      str << %(CLASS_NAME = "#{clsName}"\n)
+      str << %(CLASS_NAME = "#{cls.name}"\n)
+      str << %(
+        def className : String
+          CLASS_NAME
+        end
+      )
 
       cls.iterateClassAttribute do |attr|
         str << "@#{attr.name} : #{attr.valueType}?\n"
@@ -46,7 +50,7 @@ class CrystalClientGenerator < ClientGenerator
       
       str << %(
         def instances(&block : #{instName} -> Void) : Void
-          @client.iterateInstances(self, #{instName}, &block)
+          @client.iterateInstances(self, #{cls.name}, &block)
         end
       )
     end
@@ -74,7 +78,7 @@ class CrystalClientGenerator < ClientGenerator
 
       str << "@id : Int64\n"
 
-      str << %(CLASS_NAME = "#{clsName}"\n)
+      str << %(CLASS_NAME = "#{cls.name}"\n)
       str << %(
         getter parent : #{clsName}
       )
