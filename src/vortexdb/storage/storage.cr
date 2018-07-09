@@ -2,6 +2,8 @@ require "benchmark"
 require "./storage_contracts"
 require "../data_logger/data_logger_contracts"
 
+include VortexCommon
+
 # In-memory storage for entities
 class Storage
   # Counter for classes
@@ -53,7 +55,7 @@ class Storage
       when DBAttribute
         cls = classesById[attr.parentId]?
         next if cls.nil?
-        valType = attr.valueType.toValueType
+        valType = ValueType.parse(attr.valueType)
         nattr = if attr.isClass
                   StorageClassAttribute.new(cls, attr.id, attr.name, valType)
                 else
@@ -68,12 +70,12 @@ class Storage
     end
     Storage.attributeCounter = attrMaxId.to_i64
 
-    @database.allValues do |value|
-      attr = attributesById[value.attributeId]?
+    @database.allValues do |attrValue|
+      attr = attributesById[attrValue.attributeId]?
       if !attr.nil?
         @attributeValues[attr] = StorageAttributeWithValue.new(
           attribute: attr,
-          value: value.value.toValue(attr.valueType)
+          value: attr.valueType.toValue(attrValue.value)
         )
       end
     end
@@ -188,7 +190,7 @@ class Storage
   end
 
   # Set attribute value by id
-  def setAttributeValue(attribute : StorageAttribute, value : StorableValue) : StorageAttributeWithValue
+  def setAttributeValue(attribute : StorageAttribute, value : VortexValue) : StorageAttributeWithValue
     attrWithValue = @attributeValues[attribute]?
     if attrWithValue.nil?
       attrWithValue = StorageAttributeWithValue.new(attribute, value)

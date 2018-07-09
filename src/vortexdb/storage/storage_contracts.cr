@@ -1,4 +1,4 @@
-require "./value_type"
+include VortexCommon
 
 # Base entity
 class StorageEntity
@@ -139,7 +139,7 @@ class StorageAttributeWithValue < StorageEntity
   getter attribute : StorageAttribute
 
   # Value to store
-  property value : StorableValue
+  property value : VortexValue
 
   def initialize(@attribute, @value)
     super(0_i64)

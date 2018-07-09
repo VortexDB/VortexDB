@@ -39,7 +39,7 @@ class CommandProcessor
   # Create new class attribute
   def createAttribute(parentName : String, name : String, valueTypeStr : String, isClass : Bool) : StorageAttribute
     parent = @storage.getClassByName(parentName).not_nil!
-    valueType = valueTypeStr.toValueType
+    valueType = ValueType.parse(valueTypeStr)    
     return @storage.createAttribute(parent, name, valueType, isClass)
   end
 
@@ -50,7 +50,7 @@ class CommandProcessor
     if attr.nil?
       raise VortexException.new("Attribute does not exists")
     end
-    val = value.toValue(attr.valueType)
+    val = attr.valueType.toValue(value)
     @storage.setAttributeValue(attr, val)
   end
 
