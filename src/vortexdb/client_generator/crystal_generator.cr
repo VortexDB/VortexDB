@@ -18,7 +18,7 @@ class CrystalClientGenerator < ClientGenerator
         str << "@#{attr.name} : #{attr.valueType}?\n"
         str << %(
                     def #{attr.name} : #{attr.valueType}
-                        @client.getClassAttributeValue(self, "#{attr.name}")
+                        @client.getClassAttributeValue(self, "#{attr.name}", ValueType::#{attr.valueType})
                     end
 
                     def #{attr.name}=(value : #{attr.valueType}) : Void

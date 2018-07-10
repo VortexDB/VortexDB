@@ -75,7 +75,7 @@ class Storage
       if !attr.nil?
         @attributeValues[attr] = StorageAttributeWithValue.new(
           attribute: attr,
-          value: attr.valueType.toValue(attrValue.value)
+          value: ValueParser.toValue(attr.valueType, attrValue.value)
         )
       end
     end

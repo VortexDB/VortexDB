@@ -50,7 +50,7 @@ class CommandProcessor
     if attr.nil?
       raise VortexException.new("Attribute does not exists")
     end
-    val = attr.valueType.toValue(value)
+    val = ValueParser.toValue(attr.valueType, value)
     @storage.setAttributeValue(attr, val)
   end
 
