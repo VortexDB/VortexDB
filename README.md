@@ -1,27 +1,28 @@
-# VortexDB
+# VortexDB (Under development)
 
-Nothing works right now. Just an experement.
+Persistent storage for objects.
 
-## Installation
+## Goal
 
-TODO: Write installation instructions here
+Rapid API generation
 
-## Usage
+## Build
 
-TODO: Write usage instructions here
+git clone
+cd VortexDB
+./build/vortexdb_dev.sh
 
-## Development
+## Roadmap
 
-TODO: Write development instructions here
-
-## Contributing
-
-1. Fork it ( https://github.com/[your-github-name]/vortexdb/fork )
-2. Create your feature branch (git checkout -b my-new-feature)
-3. Commit your changes (git commit -am 'Add some feature')
-4. Push to the branch (git push origin my-new-feature)
-5. Create a new Pull Request
-
-## Contributors
-
-- [[your-github-name]](https://github.com/[your-github-name]) Grabli66 - creator, maintainer
+- [x] In-memory Storage
+- [x] Data log
+- [x] Database storage (sqlite)
+- [x] Console server (TCP server + string messages)
+- [x] External request server (websocket + msgpack)
+- [x] Crystal client generator
+- [x] Get class attribute value
+- [ ] Set class attribute value
+- [ ] Get instance attribute value
+- [ ] Set instance attribute value
+- [ ] Instance iterator
+- [ ] Array attribute iterators
