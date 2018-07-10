@@ -8,9 +8,9 @@ Rapid API generation
 
 ## Build
 
-git clone
-cd VortexDB
-./build/vortexdb_dev.sh
+- git clone
+- cd VortexDB
+- ./build/vortexdb_dev.sh
 
 ## Roadmap
 
