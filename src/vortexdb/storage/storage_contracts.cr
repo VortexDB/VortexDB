@@ -139,7 +139,7 @@ class StorageAttributeWithValue < StorageEntity
   getter attribute : StorageAttribute
 
   # Value to store
-  property value : VortexValue
+  property value : VortexValue?
 
   def initialize(@attribute, @value)
     super(0_i64)

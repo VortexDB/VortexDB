@@ -190,7 +190,7 @@ class Storage
   end
 
   # Set attribute value by id
-  def setAttributeValue(attribute : StorageAttribute, value : VortexValue) : StorageAttributeWithValue
+  def setAttributeValue(attribute : StorageAttribute, value : VortexValue?) : StorageAttributeWithValue
     attrWithValue = @attributeValues[attribute]?
     if attrWithValue.nil?
       attrWithValue = StorageAttributeWithValue.new(attribute, value)
