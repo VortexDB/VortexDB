@@ -15,13 +15,19 @@ class CrystalClientGenerator < ClientGenerator
       )
 
       cls.iterateClassAttribute do |attr|
-        str << "@#{attr.name} : #{attr.valueType}?\n"
+        valueStr = if attr.isRequired
+          "#{attr.valueType}"
+        else
+          "#{attr.valueType}?"
+        end
+
+        str << "@#{attr.name} : #{valueStr}\n"
         str << %(
-                    def #{attr.name} : #{attr.valueType}
-                        @client.getClassAttributeValue(self, "#{attr.name}", ValueType::#{attr.valueType})
+                    def #{attr.name} : #{valueStr}
+                        @client.getClassAttributeValue(self, "#{attr.name}", ValueType::#{attr.valueType}).as(#{valueStr})
                     end
 
-                    def #{attr.name}=(value : #{attr.valueType}) : Void
+                    def #{attr.name}=(value : #{valueStr}) : Void
                         @client.setClassAttributeValue(self, "#{attr.name}", value)
                     end
                 )

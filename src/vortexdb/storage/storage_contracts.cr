@@ -108,6 +108,9 @@ class StorageAttribute < StorageEntity
   # Name of attribute
   getter name : String
 
+  # Is value required
+  getter isRequired : Bool = false
+
   # Value type
   getter valueType : ValueType
 
