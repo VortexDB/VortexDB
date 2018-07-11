@@ -47,6 +47,7 @@ end
 # Attribute value
 class DBAttributeValue < DatabaseContract
   mapping(
+    parentId: Int64,
     attributeId: Int64,
     value: String
   )

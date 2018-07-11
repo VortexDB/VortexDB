@@ -35,6 +35,7 @@ class Database
             isClass INTEGER)")
 
     base.exec("CREATE TABLE t_values(
+            parentId integer,
             attributeId integer,
             value TEXT
         )
@@ -124,9 +125,10 @@ class Database
 
   # Return all values
   def allValues(&block : DBAttributeValue -> _)
-    @database.query("SELECT attributeId, value FROM t_values") do |rs|
+    @database.query("SELECT parentId, attributeId, value FROM t_values") do |rs|
       rs.each do
         yield DBAttributeValue.new(
+          parentId: rs.read(Int64),
           attributeId: rs.read(Int64),
           value: rs.read(String)
         )

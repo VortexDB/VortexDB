@@ -57,10 +57,10 @@ class ExternalRequestServer
       processNewInstance(client, contract)
     when NewAttributeErRequest
       processNewAttribute(client, contract)
-    when SetAttributeValueErRequest
-      processSetAttributeValue(client, contract)
-    when GetAttributeValueErRequest
-      processGetAttributeValue(client, contract)
+    when SetClassAttributeValueErRequest
+      processSetClassAttributeValue(client, contract)
+    when GetClassAttributeValueErRequest
+      processGetClassAttributeValue(client, contract)
     else
       raise VortexException.new("Unknown contract")
     end
@@ -85,22 +85,20 @@ class ExternalRequestServer
   end
 
   # Process set attribute value
-  private def processSetAttributeValue(client : ExternalRequestClient, contract : SetAttributeValueErRequest) : Void
-    @commandProcessor.setAttributeValueByName(
+  private def processSetClassAttributeValue(client : ExternalRequestClient, contract : SetClassAttributeValueErRequest) : Void
+    @commandProcessor.setClassAttributeValueByName(
       contract.parentName,
       contract.name,
-      contract.value,
-      contract.isClass
+      contract.value      
     )
     sendOkResponse(client)
   end
 
   # Process get attribute value
-  private def processGetAttributeValue(client : ExternalRequestClient, contract : GetAttributeValueErRequest) : Void
-    attrValue = @commandProcessor.getAttributeValueByName(
+  private def processGetClassAttributeValue(client : ExternalRequestClient, contract : GetClassAttributeValueErRequest) : Void
+    attrValue = @commandProcessor.getClassAttributeValueByName(
       contract.parentName,
-      contract.name,
-      contract.isClass
+      contract.name      
     )
 
     respValue = attrValue ? attrValue.value.to_s : "nil"    

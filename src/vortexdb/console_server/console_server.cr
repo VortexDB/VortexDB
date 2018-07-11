@@ -58,6 +58,10 @@ class ConsoleServer
       processSetClassAttributeValue(client, cmdList)
     when "gcav" # get class attribute value
       processGetClassAttributeValue(client, cmdList)
+    when "siav" # set instance attribute value
+      processSetInstanceAttributeValue(client, cmdList)
+    when "giav" # get instance attribute value
+      processGetInstanceAttributeValue(client, cmdList)
     when "dc" # delete class
       # processDelete(client, cmdList)
     when "dca" # delete class attribute
@@ -78,7 +82,7 @@ class ConsoleServer
   end
 
   # Process create new class
-  # new_class (name)
+  # (name)
   def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[1]
     parentName = nil
@@ -97,7 +101,7 @@ class ConsoleServer
   end
 
   # Process create new class attribute
-  # new_clattr (class) (name) (valueType)
+  # (class) (name) (valueType)
   def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[1]
     name = cmdList[2]
@@ -107,7 +111,7 @@ class ConsoleServer
     client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
   end
 
-  # new_instattr (className) (name) (valueType)
+  # (className) (name) (valueType)
   def processNewInstanceAttribute(client : CommandClient, cmdList : Array(String)) : Void
     className = cmdList[1]
     name = cmdList[2]
@@ -117,23 +121,43 @@ class ConsoleServer
   end
 
   # Set class attribute value
-  # set_clattr_value (class) (name) (value)
+  # (class) (name) (value)
   def processSetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.setAttributeValueByName(cmdList[1], cmdList[2], cmdList[3], true)
+    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])
     # p attrWithValue
     client.sendLine("ok")
   end
 
   # Process get class attribute value
-  # get_clattr_value (class) (name)
+  # (class) (name)
   def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.getAttributeValueByName(cmdList[1], cmdList[2], true)
+    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])
 
     if attrWithValue.nil?
       client.sendLine("null")
     else
       client.sendLine(attrWithValue.value)
     end
+  end
+
+  # Set instance attribute value
+  # (instanceId) (name) (value)
+  def processSetInstanceAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
+    # attrWithValue = @commandProcessor.setAttributeValueByName(cmdList[1], cmdList[2], cmdList[3], false)
+    # p attrWithValue
+    client.sendLine("ok")
+  end
+
+  # Process get instance attribute value
+  # (instanceId) (name)
+  def processGetInstanceAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
+    # attrWithValue = @commandProcessor.getAttributeValueByName(cmdList[1], cmdList[2], true)
+
+    # if attrWithValue.nil?
+    #   client.sendLine("null")
+    # else
+    #   client.sendLine(attrWithValue.value)
+    # end
   end
 
   # List all classes

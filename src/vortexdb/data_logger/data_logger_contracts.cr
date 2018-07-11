@@ -34,9 +34,10 @@ class NewAttributeLog < LogContract
   )
 end
 
-# Set attribute value
+# Set attribute value log
 class SetAttributeValueLog < LogContract
   mapping(
+    parentId: Int64,
     attributeId: Int64,
     value: String
   )

@@ -38,6 +38,7 @@ class DataLogDumper
         ))
       when SetAttributeValueLog
         @database.write(DBAttributeValue.new(
+          parentId: item.parentId,
           attributeId: item.attributeId,
           value: item.value
         ))
