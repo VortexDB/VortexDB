@@ -6,7 +6,7 @@ abstract class ConsoleCommand
         getter usage = {{ usage }}
         getter example = {{ example }}
 
-        ConsoleCommandFactory.knownCommands[{{ name }}] = {{ @type }}
+        ConsoleCommandFactory.knownCommands[{{ name }}] = {{ @type }}.new
     end
 
     # Process command

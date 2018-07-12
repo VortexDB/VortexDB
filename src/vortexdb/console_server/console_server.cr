@@ -29,41 +29,47 @@ class ConsoleServer
     cmdList = message.split(" ")
 
     commandName = cmdList[0]
-
-    case commandName
-    when "nc" # new class
-      processNewClass(client, cmdList)
-    when "ni" # new instance
-      processNewInstance(client, cmdList)
-    when "nca" # new class attribute
-      processNewClassAttribute(client, cmdList)
-    when "nia" # new instance attribute
-      processNewInstanceAttribute(client, cmdList)
-    when "scav" # set class attribute value
-      processSetClassAttributeValue(client, cmdList)
-    when "gcav" # get class attribute value
-      processGetClassAttributeValue(client, cmdList)
-    when "siav" # set instance attribute value
-      processSetInstanceAttributeValue(client, cmdList)
-    when "giav" # get instance attribute value
-      processGetInstanceAttributeValue(client, cmdList)
-    when "dc" # delete class
-      # processDelete(client, cmdList)
-    when "dca" # delete class attribute
-      # processGetValue(client, cmdList)
-    when "di" # delete instance
-      # processSetValue(client, cmdList)
-    when "lc" # List classes
-      processListClass(client, cmdList)
-    when "li" # List instances
-      processListInstance(client, cmdList)
-    when "lci" # List class instances
-      processListClassInstance(client, cmdList)
-    when "gen" # Generate client
-      processGenerate(client, cmdList)
+    command = ConsoleCommandFactory.get(commandName)    
+    if command
+      command.process(client, cmdList[1..-1])
     else
-      raise VortexException.new("Unknown command")
+      client.sendLine("Unknown command. Use \"help\" to list commands")
     end
+
+    # case commandName
+    # when "nc" # new class
+    #   processNewClass(client, cmdList)
+    # when "ni" # new instance
+    #   processNewInstance(client, cmdList)
+    # when "nca" # new class attribute
+    #   processNewClassAttribute(client, cmdList)
+    # when "nia" # new instance attribute
+    #   processNewInstanceAttribute(client, cmdList)
+    # when "scav" # set class attribute value
+    #   processSetClassAttributeValue(client, cmdList)
+    # when "gcav" # get class attribute value
+    #   processGetClassAttributeValue(client, cmdList)
+    # when "siav" # set instance attribute value
+    #   processSetInstanceAttributeValue(client, cmdList)
+    # when "giav" # get instance attribute value
+    #   processGetInstanceAttributeValue(client, cmdList)
+    # when "dc" # delete class
+    #   # processDelete(client, cmdList)
+    # when "dca" # delete class attribute
+    #   # processGetValue(client, cmdList)
+    # when "di" # delete instance
+    #   # processSetValue(client, cmdList)
+    # when "lc" # List classes
+    #   processListClass(client, cmdList)
+    # when "li" # List instances
+    #   processListInstance(client, cmdList)
+    # when "lci" # List class instances
+    #   processListClassInstance(client, cmdList)
+    # when "gen" # Generate client
+    #   processGenerate(client, cmdList)
+    # else
+    #   raise VortexException.new("Unknown command")
+    # end
   end
 
   # Process create new class
