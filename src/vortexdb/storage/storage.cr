@@ -18,11 +18,14 @@ class Storage
   # Classes
   @storageClasses : Hash(String, StorageClass)
 
-  # Instances. Class -> Hash(InstanceId, Instance)
-  @storageInstances : Hash(StorageClass, Hash(Int64, StorageInstance))
+  # Instances. Class name -> Hash(InstanceId, Instance)
+  @storageInstances : Hash(String, Hash(Int64, StorageInstance))
 
-  # Values for class attributes
-  @classAttributeValues : Hash(StorageAttribute, StorageAttributeWithValue)
+  # Values for class attributes. AttributeId -> Attribute with value
+  @classAttributeValues : Hash(Int64, StorageAttributeWithValue)
+
+  # Values for class attributes. InstanceId -> Hash(AttributeId, Attribute with value)
+  @instanceAttributeValues : Hash(Int64, Hash(Int64, StorageAttributeWithValue))
 
   # For working with database
   getter database : Database
@@ -72,22 +75,24 @@ class Storage
     Storage.attributeCounter = attrMaxId.to_i64
 
     @database.allValues do |attrValue|
-      attr = attributesById[attrValue.attributeId]?      
+      attr = attributesById[attrValue.attributeId]?
         case attr
         when StorageClassAttribute
-          @classAttributeValues[attr] = StorageAttributeWithValue.new(
+          @classAttributeValues[attrValue.attributeId] = StorageAttributeWithValue.new(
             attribute: attr,
             value: ValueParser.toValue(attr.valueType, attrValue.value)
           )
         when StorageInstanceAttribute
+          # TODO: for instance
         end
     end
   end
 
   def initialize(@database, @dataLogWriter)
     @storageClasses = Hash(String, StorageClass).new
-    @storageInstances = Hash(StorageClass, Hash(Int64, StorageInstance)).new
-    @classAttributeValues = Hash(StorageAttribute, StorageAttributeWithValue).new
+    @storageInstances = Hash(String, Hash(Int64, StorageInstance)).new
+    @classAttributeValues = Hash(Int64, StorageAttributeWithValue).new
+    @instanceAttributeValues = Hash(Int64, Hash(Int64, StorageAttributeWithValue)).new
 
     b = Benchmark.realtime { readEntities }
     puts "Read entities: #{b}"
@@ -154,9 +159,9 @@ class Storage
   def createInstance(parentClass : StorageClass) : StorageInstance
     Storage.instanceCounter += 1_i64
     ninstance = StorageInstance.new(Storage.instanceCounter, parentClass)
-    instances = @storageInstances[parentClass]? || Hash(Int64, StorageInstance).new
+    instances = @storageInstances[parentClass.name]? || Hash(Int64, StorageInstance).new
     if instances.empty?
-      @storageInstances[parentClass] = instances
+      @storageInstances[parentClass.name] = instances
     end
 
     instances[ninstance.id] = ninstance
@@ -197,7 +202,7 @@ class Storage
     attrWithValue = @classAttributeValues[attribute]?
     if attrWithValue.nil?
       attrWithValue = StorageAttributeWithValue.new(attribute, value)
-      @classAttributeValues[attribute] = attrWithValue
+      @classAttributeValues[attribute.id] = attrWithValue
     else
       attrWithValue.value = value
     end
