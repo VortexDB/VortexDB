@@ -116,7 +116,7 @@ class Storage
 
   # Iterate class instances classes
   def iterateClassInstances(parentClass : StorageClass, &block : StorageInstance -> _) : Void
-    instances = @storageInstances[parentClass]?
+    instances = @storageInstances[parentClass.name]?
     if instances
       instances.values.each do |x|
         yield x
@@ -131,7 +131,7 @@ class Storage
 
   # Get instance by id
   def getInstanceById(parentClass : StorageClass, id : Int64) : StorageInstance?
-    instances = @storageInstances[parentClass]?
+    instances = @storageInstances[parentClass.name]?
     instance = instances.try &.[id]?
     return instance
   end
@@ -199,7 +199,7 @@ class Storage
 
   # Set attribute value by id
   def setClassAttributeValue(attribute : StorageAttribute, value : VortexValue?) : StorageAttributeWithValue
-    attrWithValue = @classAttributeValues[attribute]?
+    attrWithValue = @classAttributeValues[attribute.id]?
     if attrWithValue.nil?
       attrWithValue = StorageAttributeWithValue.new(attribute, value)
       @classAttributeValues[attribute.id] = attrWithValue
@@ -220,6 +220,6 @@ class Storage
 
   # Get class attribute value
   def getClassAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?
-    @classAttributeValues[attribute]?
+    @classAttributeValues[attribute.id]?
   end
 end

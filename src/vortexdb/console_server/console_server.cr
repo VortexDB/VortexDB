@@ -1,32 +1,16 @@
 require "benchmark"
 require "socket"
 
-# Клиент консоли
-class CommandClient
-  # Сокет клиента
-  getter socket : Socket
-
-  # Конструктор
-  def initialize(@socket)
-  end
-
-  # Отправляет строку с переводом строки
-  def sendLine(message)
-    begin
-      @socket.send("#{message}\n")
-    rescue
-      puts "Send error"
-    end
-  end
-end
-
 # Обрабатывает команды консоли
 class ConsoleServer
   # Размер буффера
   BUFFER_SIZE = 4096
 
-  # Сервер
+  # TCP Server
   @server : TCPServer
+
+  # Console commands hash
+  @commands : Hash(String, ConsoleCommand)
 
   # Server port
   getter port : Int32
@@ -37,6 +21,7 @@ class ConsoleServer
   def initialize(@port, @commandProcessor)
     @server = TCPServer.new(@port)
     @server.recv_buffer_size = BUFFER_SIZE
+    @commands = Hash(String, ConsoleCommand).new
   end
 
   # Process message
