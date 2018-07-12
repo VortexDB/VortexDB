@@ -1,6 +1,6 @@
 *.log
 *.db
-*.cr
+generated.cr
 /docs/
 /lib/
 /bin/*
