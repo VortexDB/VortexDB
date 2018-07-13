@@ -1,6 +1,6 @@
 # Generator for crystal code
 class CrystalClientGenerator < ClientGenerator
-  GENERATED_FILE_NAME = "generated.cr"
+  register("crystal")  
 
   # Generate class for client
   private def generateClass(cls : StorageClass) : String
@@ -122,7 +122,7 @@ class CrystalClientGenerator < ClientGenerator
   end
 
   # Generate code
-  def generate(storage : Storage) : Void
+  def generate(storage : Storage, fileName : String) : Void
     genStr = String.build do |str|
       str << %(require "commonclient")
 
@@ -134,7 +134,7 @@ class CrystalClientGenerator < ClientGenerator
       end      
     end
 
-    File.write(GENERATED_FILE_NAME, genStr)
-    Process.new("crystal", ["tool", "format", GENERATED_FILE_NAME])
+    File.write(fileName, genStr)
+    Process.new("crystal", ["tool", "format", fileName])
   end
 end
