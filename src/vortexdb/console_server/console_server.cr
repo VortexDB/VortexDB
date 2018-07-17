@@ -70,26 +70,7 @@ class ConsoleServer
     # else
     #   raise VortexException.new("Unknown command")
     # end
-  end
-
-  # Process create new class
-  # (name)
-  def processNewClass(client : CommandClient, cmdList : Array(String)) : Void
-    className = cmdList[1]
-    parentName = nil
-    parentName = cmdList[2] if cmdList.size > 2
-    nclass = @commandProcessor.createClass(className, parentName)
-    # p nclass
-    client.sendLine("Class created Id: #{nclass.id} Name: #{nclass.name} ParentName: #{parentName || "null"}")
-  end
-
-  # Process create new instance
-  def processNewInstance(client : CommandClient, cmdList : Array(String)) : Void
-    parentName = cmdList[1]
-    ninst = @commandProcessor.createInstance(parentName)
-    # p ninst
-    client.sendLine("Instance created Id: #{ninst.id} ClassName: #{parentName}")
-  end
+  end 
 
   # Process create new class attribute
   # (class) (name) (valueType)
