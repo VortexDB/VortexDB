@@ -29,7 +29,7 @@ class ConsoleServer
     cmdList = message.split(" ")
 
     commandName = cmdList[0]
-    command = ConsoleCommandFactory.get(commandName)    
+    command = ConsoleCommandFactory.get(commandName, @commandProcessor)    
     if command
       command.process(client, cmdList[1..-1])
     else
@@ -223,10 +223,10 @@ class ConsoleServer
             end
             puts bench
           rescue e : VortexException
-            puts e.backtrace
+            puts e.inspect_with_backtrace
             commandClient.sendLine(e.message!)
           rescue e : Exception
-            puts e.backtrace
+            puts e.inspect_with_backtrace
             commandClient.sendLine("error")
           end
         end
