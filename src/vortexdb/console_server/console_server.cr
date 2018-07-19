@@ -164,7 +164,7 @@ class ConsoleServer
     client.sendLine("Type \"help\" to get commands list.")
   end
 
-  # Запускает сервер
+  # Start server
   def start : Void
     loop do
       client = @server.accept
