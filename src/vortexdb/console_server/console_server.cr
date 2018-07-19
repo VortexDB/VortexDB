@@ -70,27 +70,7 @@ class ConsoleServer
     # else
     #   raise VortexException.new("Unknown command")
     # end
-  end 
-
-  # Process create new class attribute
-  # (class) (name) (valueType)
-  def processNewClassAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    className = cmdList[1]
-    name = cmdList[2]
-    valueTypeStr = cmdList[3]
-    nattr = @commandProcessor.createAttribute(className, name, valueTypeStr, true)
-    # p nattr
-    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
-  end
-
-  # (className) (name) (valueType)
-  def processNewInstanceAttribute(client : CommandClient, cmdList : Array(String)) : Void
-    className = cmdList[1]
-    name = cmdList[2]
-    valueTypeStr = cmdList[3]
-    nattr = @commandProcessor.createAttribute(className, name, valueTypeStr, false)
-    client.sendLine("Attribute created ClassName: #{nattr.parentClass.name} AttributeId: #{nattr.id} AttributeName: #{nattr.name} ValueType: #{nattr.valueType}")
-  end
+  end   
 
   # Set class attribute value
   # (class) (name) (value)
@@ -178,12 +158,19 @@ class ConsoleServer
     client.sendLine("Ok")
   end
 
+  # Send welcome to client
+  def sendWelcome(client : CommandClient) : Void
+    client.sendLine("Welcome to VortexDB console.")
+    client.sendLine("Type \"help\" to get commands list.")
+  end
+
   # Запускает сервер
   def start : Void
     loop do
       client = @server.accept
       next if client.nil?
       commandClient = CommandClient.new(client)
+      sendWelcome(commandClient)
 
       spawn do
         loop do

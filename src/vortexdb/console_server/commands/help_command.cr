@@ -2,9 +2,12 @@
 class HelpCommand < ConsoleCommand
     register(
         "help",
-        "get help and command list",
-        "",
-        ""
+        "get command list and command info",
+        "help([CommandName])",
+        "help \ 
+         help nc\
+         help ni\
+        "
     )
 
     # Process command
@@ -13,5 +16,8 @@ class HelpCommand < ConsoleCommand
             client.sendLine("#{command.name} - #{command.description}")
         end
         client.sendLine("exit - exit from console")
+        
+        client.sendLine("")
+        client.sendLine("To get command info type help command name")        
     end
 end
