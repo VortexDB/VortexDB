@@ -2,7 +2,7 @@
 class GenerateCommand < ConsoleCommand
     register(
         "gen",
-        "",
+        "Generate client code for targer",
         "gen(targetName, [fileName]) : Void",
         "gen crystal"
     )

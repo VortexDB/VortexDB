@@ -36,7 +36,7 @@ class CommandProcessor
     return @storage.createInstance(parent)
   end
 
-  # Create new class attribute
+  # Create class/instance attribute
   def createAttribute(parentName : String, name : String, valueTypeStr : String, isClass : Bool) : StorageAttribute
     parent = @storage.getClassByName(parentName).not_nil!
     valueType = ValueType.parse(valueTypeStr)    
