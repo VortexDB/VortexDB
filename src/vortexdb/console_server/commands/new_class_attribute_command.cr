@@ -3,7 +3,7 @@ class NewClassAttributeCommand < ConsoleCommand
   register(
     "nca",
     "create new class attribute. Returns attribute id",
-    "nca(className, attributeName, valueType) : Void",
+    "nca(className, attributeName, valueType) : Int64",
     "nca Base id int"
   )
 

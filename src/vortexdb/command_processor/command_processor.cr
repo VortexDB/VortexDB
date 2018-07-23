@@ -44,7 +44,7 @@ class CommandProcessor
   end
 
   # Set attribute value by attribute name
-  def setClassAttributeValueByName(parentName : String, name : String, value : String) : StorageAttributeWithValue
+  def setClassAttributeValue(parentName : String, name : String, value : String) : StorageAttributeWithValue
     parent = @storage.getClassByName(parentName).not_nil!
     attr = parent.getAttribute(name, true)
     if attr.nil?
@@ -55,7 +55,7 @@ class CommandProcessor
   end
 
   # Get class value by attribute name
-  def getClassAttributeValueByName(parentName : String, name : String) : StorageAttributeWithValue?
+  def getClassAttributeValue(parentName : String, name : String) : StorageAttributeWithValue?
     parent = @storage.getClassByName(parentName)
     if parent.nil?
       raise VortexException.new("Class #{parentName} does not exists")

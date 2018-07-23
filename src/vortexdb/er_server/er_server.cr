@@ -86,7 +86,7 @@ class ExternalRequestServer
 
   # Process set attribute value
   private def processSetClassAttributeValue(client : ExternalRequestClient, contract : SetClassAttributeValueErRequest) : Void
-    @commandProcessor.setClassAttributeValueByName(
+    @commandProcessor.setClassAttributeValue(
       contract.parentName,
       contract.name,
       contract.value      
@@ -96,7 +96,7 @@ class ExternalRequestServer
 
   # Process get attribute value
   private def processGetClassAttributeValue(client : ExternalRequestClient, contract : GetClassAttributeValueErRequest) : Void
-    attrValue = @commandProcessor.getClassAttributeValueByName(
+    attrValue = @commandProcessor.getClassAttributeValue(
       contract.parentName,
       contract.name      
     )

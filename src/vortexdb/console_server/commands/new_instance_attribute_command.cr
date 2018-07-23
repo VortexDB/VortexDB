@@ -3,7 +3,7 @@ class NewInstanceAttributeCommand < ConsoleCommand
   register(
     "nia",
     "create new instance attribute. Returns attribute id",
-    "nia(className, attributeName, valueType) : Void",
+    "nia(className, attributeName, valueType) : Int64",
     "nia Base name string"
   )
 
