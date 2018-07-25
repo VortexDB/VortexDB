@@ -202,10 +202,10 @@ class Storage
     attrWithValue = @classAttributeValues[attribute.id]?
     if attrWithValue.nil?
       attrWithValue = StorageAttributeWithValue.new(attribute, value)
-      @classAttributeValues[attribute.id] = attrWithValue
-    else
-      attrWithValue.value = value
+      @classAttributeValues[attribute.id] = attrWithValue          
     end
+
+    attrWithValue.value = value
 
     @dataLogWriter.write(
       SetAttributeValueLog.new(
@@ -221,5 +221,31 @@ class Storage
   # Get class attribute value
   def getClassAttributeValue(attribute : StorageAttribute) : StorageAttributeWithValue?
     @classAttributeValues[attribute.id]?
+  end
+
+  # Set attribute value by id
+  def setInstanceAttributeValue(instance : StorageInstance, attribute : StorageAttribute, value : VortexValue?) : StorageAttributeWithValue?
+    attributes = @instanceAttributeValues[instance.id]?
+    if attributes.nil?
+      attributes = Hash(Int64, StorageAttributeWithValue).new
+      @instanceAttributeValues[instance.id] = attributes
+    end    
+
+    attrWithValue = attributes[attribute.id]?
+    if attrWithValue.nil?
+      attrWithValue = StorageAttributeWithValue.new(attribute, value)
+      attributes[attribute.id] = attrWithValue
+    end
+
+    @dataLogWriter.write(
+      SetAttributeValueLog.new(
+        parentId: attribute.parentClass.id,
+        attributeId: attribute.id,
+        value: value.to_s
+      )
+    )
+
+    attrWithValue.value = value
+    return attrWithValue
   end
 end
