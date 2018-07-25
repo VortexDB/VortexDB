@@ -17,10 +17,17 @@ class CommandProcessor
   end
 
   # Iterate class instances by class name
-  def iterateClassInstances(name : String, &block : StorageInstance -> _) : Void
+  def iterateClassInstances(name : String, &block : StorageInstance -> Void) : Void
     parent = @storage.getClassByName(name)
     raise VortexException.new("Class does not exists") if parent.nil?
     @storage.iterateClassInstances(parent, &block)
+  end
+
+  # Iterate class attributes
+  def iterateClassAttributes(name : String, &block : StorageClassAttribute -> Void) : Void
+    parent = @storage.getClassByName(name)
+    raise VortexException.new("Class does not exists") if parent.nil?
+    parent.iterateClassAttribute(&block)
   end
 
   # Creates new class
