@@ -103,6 +103,11 @@ class Database
     @database.query_all("SELECT id, name, parentId FROM t_classes", as: DBClass)
   end
 
+  # Return all instances
+  def allInstances : Array(DBInstance)
+    @database.query_all("SELECT id, parentId FROM t_instances", as: DBInstance)
+  end
+
   # Return all attributes
   def allAttributes(&block : DBAttribute -> _) : Void
     @database.query("SELECT id, name, parentId, valueType, isClass FROM t_attributes") do |rs|

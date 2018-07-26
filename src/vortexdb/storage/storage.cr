@@ -46,11 +46,8 @@ class Storage
       classMaxId = cls.id if classMaxId < cls.id
     end
 
-    Storage.classCounter = classMaxId.to_i64
-
-    instCount = @database.getInstanceCount
-    Storage.instanceCounter = instCount
-
+    Storage.classCounter = classMaxId.to_i64    
+    
     attributesById = Hash(Int64, StorageAttribute).new
     attrMaxId = 0
     @database.allAttributes do |attr|
@@ -73,6 +70,24 @@ class Storage
       end
     end
     Storage.attributeCounter = attrMaxId.to_i64
+    
+    instMaxId = 0_i64
+
+    @database.allInstances.each do |instance|      
+      parentClass = classesById[instance.parentId]?
+      if parentClass
+        instHash = @storageInstances[parentClass.name]?
+        if instHash.nil?
+          instHash = Hash(Int64, StorageInstance).new
+          @storageInstances[parentClass.name] = instHash
+        end
+        newInst = StorageInstance.new(instance.id, parentClass)
+        instHash[instance.id] = newInst
+        instCount = instance.id if instMaxId < instance.id
+      end      
+    end
+
+    Storage.instanceCounter = instMaxId
 
     @database.allValues do |attrValue|
       attr = attributesById[attrValue.attributeId]?
