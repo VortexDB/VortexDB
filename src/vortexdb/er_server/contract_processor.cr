@@ -1,0 +1,2 @@
+abstract class ContractProcessor
+end
