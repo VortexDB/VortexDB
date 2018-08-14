@@ -12,7 +12,7 @@ end
 
 # Main server for processing requests
 # Uses websockets for transport
-class ExternalRequestServer  
+class ExternalRequestServer
   # Server port
   getter port : Int32
 
@@ -50,20 +50,24 @@ class ExternalRequestServer
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
     p contract
-    case contract
-    when NewClassErRequest
-      processNewClass(client, contract)
-    when NewInstanceErRequest
-      processNewInstance(client, contract)
-    when NewAttributeErRequest
-      processNewAttribute(client, contract)
-    when SetClassAttributeValueErRequest
-      processSetClassAttributeValue(client, contract)
-    when GetClassAttributeValueErRequest
-      processGetClassAttributeValue(client, contract)
-    else
-      raise VortexException.new("Unknown contract")
+    processor = ContractProcessorFactory.get(contract.class, @commandProcessor)
+    if processor
+      processor.process(client, contract)
     end
+    # case contract
+    # when NewClassErRequest
+    #   processNewClass(client, contract)
+    # when NewInstanceErRequest
+    #   processNewInstance(client, contract)
+    # when NewAttributeErRequest
+    #   processNewAttribute(client, contract)
+    # when SetClassAttributeValueErRequest
+    #   processSetClassAttributeValue(client, contract)
+    # when GetClassAttributeValueErRequest
+    #   processGetClassAttributeValue(client, contract)
+    # else
+    #   raise VortexException.new("Unknown contract")
+    # end
   end
 
   # Process new class request
@@ -89,7 +93,7 @@ class ExternalRequestServer
     @commandProcessor.setClassAttributeValue(
       contract.parentName,
       contract.name,
-      contract.value      
+      contract.value
     )
     sendOkResponse(client)
   end
@@ -98,25 +102,25 @@ class ExternalRequestServer
   private def processGetClassAttributeValue(client : ExternalRequestClient, contract : GetClassAttributeValueErRequest) : Void
     attrValue = @commandProcessor.getClassAttributeValue(
       contract.parentName,
-      contract.name      
+      contract.name
     )
 
-    respValue = attrValue ? attrValue.value.to_s : "nil"    
+    respValue = attrValue ? attrValue.value.to_s : "nil"
     sendResponse(client, GetAttributeValueErResponse.new(
-        value: respValue
+      value: respValue
     ))
   end
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
     begin
-      case e        
+      case e
       when VortexException
         # TODO: Response exception
         sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.message!)
       else
         sendErrorResponse(client, ResponseCodes::INTERNAL_ERROR, e.to_s)
-      end      
+      end
     rescue
       puts "Send error"
     end
