@@ -2,6 +2,10 @@
 class NewClassProcessor < ContractProcessor
   register(NewClassErRequest)
 
-  def process(client : ExternalRequestClient, contract : ErContract) : Void
+  # Process contract
+  def processInternal(client : ExternalRequestClient, contract : NewClassErRequest) : Void
+    cls = @commandProcessor.createClass(contract.name, contract.parentName)
+    pp cls
+    sendOkResponse(client)
   end
 end

@@ -50,7 +50,7 @@ class ExternalRequestServer
   # Process contract
   private def processContract(client : ExternalRequestClient, contract : ErContract) : Void
     p contract
-    processor = ContractProcessorFactory.get(contract.class, @commandProcessor)
+    processor = ContractProcessorFactory.get(contract.class, @commandProcessor)    
     if processor
       processor.process(client, contract)
     end
@@ -68,12 +68,6 @@ class ExternalRequestServer
     # else
     #   raise VortexException.new("Unknown contract")
     # end
-  end
-
-  # Process new class request
-  private def processNewClass(client : ExternalRequestClient, contract : NewClassErRequest) : Void
-    cls = @commandProcessor.createClass(contract.name, contract.parentName)
-    sendOkResponse(client)
   end
 
   # Process new instance
