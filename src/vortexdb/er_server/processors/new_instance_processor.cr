@@ -1,4 +1,4 @@
-# Process new class contract
+# Process new instance contract
 class NewInstanceProcessor < ContractProcessor
   register(NewInstanceErRequest)
 
