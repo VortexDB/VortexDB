@@ -68,20 +68,8 @@ class ExternalRequestServer
     # else
     #   raise VortexException.new("Unknown contract")
     # end
-  end
-
-  # Process new instance
-  private def processNewInstance(client : ExternalRequestClient, contract : NewInstanceErRequest) : Void
-    inst = @commandProcessor.createInstance(contract.parentName)
-    sendOkResponse(client)
-  end
-
-  # Process new attribute
-  private def processNewAttribute(client : ExternalRequestClient, contract : NewAttributeErRequest) : Void
-    attr = @commandProcessor.createAttribute(contract.parentName, contract.name, contract.valueType, contract.isClass)
-    sendOkResponse(client)
-  end
-
+  end  
+  
   # Process set attribute value
   private def processSetClassAttributeValue(client : ExternalRequestClient, contract : SetClassAttributeValueErRequest) : Void
     @commandProcessor.setClassAttributeValue(
