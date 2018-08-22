@@ -80,19 +80,6 @@ class ExternalRequestServer
     sendOkResponse(client)
   end
 
-  # Process get attribute value
-  private def processGetClassAttributeValue(client : ExternalRequestClient, contract : GetClassAttributeValueErRequest) : Void
-    attrValue = @commandProcessor.getClassAttributeValue(
-      contract.parentName,
-      contract.name
-    )
-
-    respValue = attrValue ? attrValue.value.to_s : "nil"
-    sendResponse(client, GetAttributeValueErResponse.new(
-      value: respValue
-    ))
-  end
-
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
     begin
