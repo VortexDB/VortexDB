@@ -54,31 +54,7 @@ class ExternalRequestServer
     if processor
       processor.process(client, contract)
     end
-    # case contract
-    # when NewClassErRequest
-    #   processNewClass(client, contract)
-    # when NewInstanceErRequest
-    #   processNewInstance(client, contract)
-    # when NewAttributeErRequest
-    #   processNewAttribute(client, contract)
-    # when SetClassAttributeValueErRequest
-    #   processSetClassAttributeValue(client, contract)
-    # when GetClassAttributeValueErRequest
-    #   processGetClassAttributeValue(client, contract)
-    # else
-    #   raise VortexException.new("Unknown contract")
-    # end
   end  
-  
-  # Process set attribute value
-  private def processSetClassAttributeValue(client : ExternalRequestClient, contract : SetClassAttributeValueErRequest) : Void
-    @commandProcessor.setClassAttributeValue(
-      contract.parentName,
-      contract.name,
-      contract.value
-    )
-    sendOkResponse(client)
-  end
 
   # Process exception
   private def processException(client : ExternalRequestClient, e : Exception) : Void
