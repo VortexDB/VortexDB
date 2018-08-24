@@ -79,7 +79,28 @@ class CommandProcessor
     if attr.nil?
       raise VortexException.new("Attribute #{name} does not exists")
     end
-    @storage.getClassAttributeValue(attr)
+    
+    return @storage.getClassAttributeValue(attr)
+  end
+
+  # Get instance attribute value
+  def getInstanceAttributeValue(className : String, instanceId : Int64, name : String) : StorageAttributeWithValue?
+    parent = @storage.getClassByName(className)
+    if parent.nil?
+      raise VortexException.new("Class #{className} does not exists")
+    end
+
+    instance = @storage.getInstanceById(parent, instanceId)
+    if instance.nil?
+      raise VortexException.new("Instance #{instanceId} does not exists")
+    end
+
+    attr = parent.getAttribute(name, false)
+    if attr.nil?
+      raise VortexException.new("Attribute does not exists")
+    end
+
+    return @storage.getInstanceAttributeValue(instance, attr)
   end
 
   # Set instance attribute value

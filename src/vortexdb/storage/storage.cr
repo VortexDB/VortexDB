@@ -238,6 +238,14 @@ class Storage
     @classAttributeValues[attribute.id]?
   end
 
+  # Get instance attribute value
+  def getInstanceAttributeValue(instance : StorageInstance, attribute : StorageAttribute) : StorageAttributeWithValue?
+    attributes = @instanceAttributeValues[instance.id]?
+    return nil unless attributes
+    attrWithValue = attributes[attribute.id]?
+    return attrWithValue
+  end
+
   # Set attribute value by id
   def setInstanceAttributeValue(instance : StorageInstance, attribute : StorageAttribute, value : VortexValue?) : StorageAttributeWithValue?
     attributes = @instanceAttributeValues[instance.id]?
