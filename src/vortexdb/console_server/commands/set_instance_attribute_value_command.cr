@@ -13,7 +13,7 @@ class SetInstanceAttributeValueCommand < ConsoleCommand
     instanceId = params[1].to_i64
     attrName = params[2]
     valueStr = params[3]
-    @commandProcessor.setInstanceAttributeValue(className, instanceId, attrName, valueStr)
+    @commandProcessor.setInstanceAttributeValue(instanceId, className, attrName, valueStr)
     client.sendLine("ok")
   end
 end

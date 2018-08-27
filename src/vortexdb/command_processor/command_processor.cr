@@ -104,7 +104,7 @@ class CommandProcessor
   end
 
   # Set instance attribute value
-  def setInstanceAttributeValue(className : String, instanceId : Int64, name : String, value : String) : StorageAttributeWithValue?
+  def setInstanceAttributeValue(instanceId : Int64, className : String, name : String, value : String) : StorageAttributeWithValue?
     parent = @storage.getClassByName(className)
     if parent.nil?
       raise VortexException.new("Class #{className} does not exists")
