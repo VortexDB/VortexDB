@@ -12,7 +12,7 @@
     "build": "react-scripts-ts build",
     "test": "react-scripts-ts test --env=jsdom",
     "eject": "react-scripts-ts eject",
-    "postbuild" : "mv build/* ../bin/web"
+    "postbuild" : "rsync -r -a build/** ../bin/public"
   },
   "devDependencies": {
     "@types/jest": "^23.3.1",
