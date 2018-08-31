@@ -1,10 +1,27 @@
 import * as React from 'react';
-import './App.css';
-import './bootstrap.min.css'
-
 import logo from './logo.svg';
+import './App.css';
+import './bootstrap.min.css';
+import { SideMenuModel } from './side_menu/SideMenuModel';
+import { SideMenuItem } from './side_menu/SideMenuItem';
+import SideMenu from './side_menu/SideMenu';
+
 
 class App extends React.Component {
+  /// Model for side menu
+  private sideMenuModel: SideMenuModel;
+
+  constructor(props: any) {
+    super(props);
+
+    this.sideMenuModel = new SideMenuModel(
+      [
+        new SideMenuItem("Classes", "Classes", "power", true),
+        new SideMenuItem("Instances", "Instances", "place")        
+      ]
+    );
+  }
+
   public render() {
     return (
       <div id="app-inner">
@@ -17,7 +34,7 @@ class App extends React.Component {
 
         <div id="app-content">
           <div id="left-panel">
-            <p>Left panel</p>
+            <SideMenu model={this.sideMenuModel} />
           </div>
           <div id="right-panel">
             <p>Right panel</p>
