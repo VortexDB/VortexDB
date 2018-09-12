@@ -7,6 +7,7 @@ class GenerateCommand < ConsoleCommand
         "gen crystal"
     )
 
+    # Return descriptions
     def description : String
         targets = ClientGeneratorFactory.knownGenerators.map { |k, _| k }.join(", ")
         "generate client code for target: #{targets}. Returns \"ok\" if code created"

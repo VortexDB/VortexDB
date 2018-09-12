@@ -35,81 +35,6 @@ class ConsoleServer
     else
       client.sendLine("Unknown command. Use \"help\" to list commands")
     end
-
-    # case commandName
-    # when "nc" # new class
-    #   processNewClass(client, cmdList)
-    # when "ni" # new instance
-    #   processNewInstance(client, cmdList)
-    # when "nca" # new class attribute
-    #   processNewClassAttribute(client, cmdList)
-    # when "nia" # new instance attribute
-    #   processNewInstanceAttribute(client, cmdList)
-    # when "scav" # set class attribute value
-    #   processSetClassAttributeValue(client, cmdList)
-    # when "gcav" # get class attribute value
-    #   processGetClassAttributeValue(client, cmdList)
-    # when "siav" # set instance attribute value
-    #   processSetInstanceAttributeValue(client, cmdList)
-    # when "giav" # get instance attribute value
-    #   processGetInstanceAttributeValue(client, cmdList)
-    # when "dc" # delete class
-    #   # processDelete(client, cmdList)
-    # when "dca" # delete class attribute
-    #   # processGetValue(client, cmdList)
-    # when "di" # delete instance
-    #   # processSetValue(client, cmdList)
-    # when "lc" # List classes
-    #   processListClass(client, cmdList)
-    # when "li" # List instances
-    #   processListInstance(client, cmdList)
-    # when "lci" # List class instances
-    #   processListClassInstance(client, cmdList)
-    # when "gen" # Generate client
-    #   processGenerate(client, cmdList)
-    # else
-    #   raise VortexException.new("Unknown command")
-    # end
-  end   
-
-  # Set class attribute value
-  # (class) (name) (value)
-  def processSetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.setClassAttributeValueByName(cmdList[1], cmdList[2], cmdList[3])
-    # p attrWithValue
-    client.sendLine("ok")
-  end
-
-  # Process get class attribute value
-  # (class) (name)
-  def processGetClassAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    attrWithValue = @commandProcessor.getClassAttributeValueByName(cmdList[1], cmdList[2])
-
-    if attrWithValue.nil?
-      client.sendLine("null")
-    else
-      client.sendLine(attrWithValue.value)
-    end
-  end
-
-  # Set instance attribute value
-  # (instanceId) (name) (value)
-  def processSetInstanceAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    # attrWithValue = @commandProcessor.setAttributeValueByName(cmdList[1], cmdList[2], cmdList[3], false)
-    # p attrWithValue
-    client.sendLine("ok")
-  end
-
-  # Process get instance attribute value
-  # (instanceId) (name)
-  def processGetInstanceAttributeValue(client : CommandClient, cmdList : Array(String)) : Void
-    # attrWithValue = @commandProcessor.getAttributeValueByName(cmdList[1], cmdList[2], true)
-
-    # if attrWithValue.nil?
-    #   client.sendLine("null")
-    # else
-    #   client.sendLine(attrWithValue.value)
-    # end
   end
 
   # List all classes
@@ -145,10 +70,6 @@ class ConsoleServer
     end
 
     client.sendLine("Instance count: #{count}")
-  end
-
-  # List all classes
-  def processListClassInstances(client : CommandClient, cmdList : Array(String)) : Void
   end
 
   # Generate client contracts

@@ -78,7 +78,7 @@ class CrystalClientGenerator < ClientGenerator
   end
 
   # Generate instance for client
-  def generateInstance(cls : StorageClass) : String
+  private def generateInstance(cls : StorageClass) : String
     attrArr = String.build do |str|
       clsName = "#{cls.name}Class"
 
@@ -131,7 +131,7 @@ class CrystalClientGenerator < ClientGenerator
         str << clsData
         instData = generateInstance(cls)
         str << instData
-      end      
+      end
     end
 
     File.write(fileName, genStr)

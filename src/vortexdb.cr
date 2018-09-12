@@ -17,10 +17,12 @@ consoleServer = ConsoleServer.new(COMMAND_PORT, commandProcessor)
 erServer = ExternalRequestServer.new(DATA_PORT, commandProcessor)
 
 spawn do
+  puts "Start console server port: #{COMMAND_PORT}"
   consoleServer.start
 end
 
 spawn do
+  puts "Start external request server port: #{DATA_PORT}"
   erServer.start
 end
 
