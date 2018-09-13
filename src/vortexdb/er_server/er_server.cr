@@ -13,9 +13,6 @@ end
 # Main server for processing requests
 # Uses websockets for transport
 class ExternalRequestServer
-  # Server port
-  getter port : Int32
-
   # Command processor
   getter commandProcessor : CommandProcessor
 
@@ -90,7 +87,7 @@ class ExternalRequestServer
     end
   end
 
-  def initialize(@port, @commandProcessor)
+  def initialize(@commandProcessor)
   end
 
   # Start server
@@ -101,7 +98,6 @@ class ExternalRequestServer
       rescue
         puts "DISCONNECT"
       end
-    end
-    Kemal.run port
+    end    
   end
 end

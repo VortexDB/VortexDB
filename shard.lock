@@ -29,6 +29,6 @@ shards:
     version: 0.10.0
 
   vortexcommon:
-    path: ../VortexCommon/
-    version: 0.1.0
+    github: VortexDB/VortexCommon
+    commit: 6a7e1b275881b20c1a1ad7a1fb640ffde19a4691
 

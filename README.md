@@ -21,8 +21,9 @@ Rapid API generation
 - [x] External request server (websocket + msgpack)
 - [x] Crystal client generator
 - [x] Get class attribute value
-- [ ] Set class attribute value
-- [ ] Get instance attribute value
-- [ ] Set instance attribute value
+- [x] Set class attribute value
+- [x] Get instance attribute value
+- [x] Set instance attribute value
 - [ ] Instance iterator
 - [ ] Array attribute iterators
+- [ ] Web interface for editing objects

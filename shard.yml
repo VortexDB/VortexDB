@@ -12,7 +12,7 @@ dependencies:
   kemal:
     github: kemalcr/kemal
   vortexcommon:
-    path: ../VortexCommon/
+    github: VortexDB/VortexCommon
 
 targets:
   vortexdb:
