@@ -1,7 +1,0 @@
-{
-    "crystal-lang.mainFile": "src/main.cr",
-    "crystal-lang.completion": true,
-    "crystal-lang.hover": true,
-    "crystal-lang.implementations": true,
-    "crystal-lang.server": "/home/grabli66/Workspace/scry/scry"
-}

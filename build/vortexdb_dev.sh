@@ -1,1 +1,0 @@
-crystal build --progress -o ./bin/vortexdb ./src/vortexdb.cr
