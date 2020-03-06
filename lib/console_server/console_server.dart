@@ -7,7 +7,7 @@ class ConsoleServer {
     final server = await ServerSocket.bind(host, port);
     print('Console server started');
     server.listen((client) {
-      client.writeln('Hello! Welcome to VortexDB\r');
+      client.writeln('Hello! Welcome to VortexDB!\r');
       client.write('> ');
       client.listen((data) {
         print(data);
