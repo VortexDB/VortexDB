@@ -1,7 +1,5 @@
-name: VortexDB
-description: A sample command-line application.
-# version: 1.0.0
-# homepage: https://www.example.com
+name: vortexdb
+description: Object database
 
 environment:
   sdk: '>=2.7.0 <3.0.0'
