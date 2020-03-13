@@ -1,16 +1,17 @@
 import 'package:vortexdb/common/console/console_client_socket.dart';
 import 'package:vortexdb/server/console_server/commands/console_command.dart';
 
-/// Exit from console server
-class ExitCommand extends ConsoleCommand {
+/// Create new instance of class command
+class CreateInstanceCommand extends ConsoleCommand {
   /// Command name
-  static const Name = 'exit';
+  static const Name = 'ci';
 
   /// Constructor
-  ExitCommand() : super(Name, 'Disconnect from console server');
+  CreateInstanceCommand() : super(Name, 'Create new instance of class');
 
+  /// Process command
   @override
   Future process(ConsoleClientSocket client, List<String> _) async {
-    await client.close();
+    client.send('ok');
   }
 }

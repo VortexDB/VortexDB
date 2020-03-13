@@ -6,6 +6,8 @@ environment:
 
 dependencies:
   args: ^1.5.2
+  binary_data:
+    path: ../BinaryData
 #  path: ^1.6.0
 
 dev_dependencies:

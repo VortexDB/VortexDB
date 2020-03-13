@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:vortexdb/common/console/console_client_socket.dart';
 import 'package:vortexdb/server/console_server/command_factory.dart';
 import 'package:vortexdb/server/console_server/commands/console_command.dart';
 
@@ -12,10 +13,9 @@ class HelpCommand extends ConsoleCommand {
   HelpCommand() : super(Name, 'Print help');
 
   @override
-  Future process(Socket client, List<String> _) async {
+  Future process(ConsoleClientSocket client, List<String> _) async {
     final commands = CommandFactory.instance.getCommands();
-    for (var command in commands) {
-      client.writeln('${command.name} - ${command.description}');
-    }
+    final data = commands.map((x) => '${x.name} - ${x.description}').join('\n');
+    client.send(data);
   }
 }

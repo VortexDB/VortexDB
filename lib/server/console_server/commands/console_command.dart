@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:vortexdb/common/console/console_client_socket.dart';
 
 /// Base console command class
 abstract class ConsoleCommand {
@@ -12,5 +12,5 @@ abstract class ConsoleCommand {
   ConsoleCommand(this.name, this.description);
 
   /// Process command
-  Future process(Socket client, List<String> parameters);
+  Future process(ConsoleClientSocket client, List<String> parameters);
 }
